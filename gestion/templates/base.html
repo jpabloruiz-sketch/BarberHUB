@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BarberHUB</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        body {
+            background-color: #121212; /* Fondo oscuro para toda la web */
+            color: #ffffff; /* Letras blancas por defecto */
+        }
+        
+        /* Navbar Negro */
+        .navbar-barberhub {
+            background-color: #000000 !important;
+            border-bottom: 2px solid #D4AF37; /* Línea delgada dorada abajo del menú */
+        }
+
+        /* Texto Dorado para la Marca */
+        .brand-gold {
+            color: #D4AF37 !important;
+            font-size: 24px;
+            letter-spacing: 1px;
+        }
+
+        /* Enlaces del menú en blanco que cambian a dorado al pasar el mouse */
+        .nav-link-barberhub {
+            color: #ffffff !important;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        .nav-link-barberhub:hover, .nav-link-barberhub.active {
+            color: #D4AF37 !important;
+        }
+
+        /* Botón Dorado con letras negras */
+        .btn-gold {
+            background-color: #D4AF37 !important;
+            color: #000000 !important;
+            border: 1px solid #D4AF37 !important;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .btn-gold:hover {
+            background-color: #000000 !important;
+            color: #D4AF37 !important;
+        }
+
+        /* Botón Negro con borde y letras doradas */
+        .btn-outline-gold {
+            background-color: transparent !important;
+            color: #D4AF37 !important;
+            border: 1px solid #D4AF37 !important;
+            font-weight: 500;
+        }
+        .btn-outline-gold:hover {
+            background-color: #D4AF37 !important;
+            color: #000000 !important;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-barberhub shadow-lg py-3">
+        <div class="container">
+            <a class="navbar-brand fw-bold brand-gold" href="{% url 'home' %}">💈 BarberHUB</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" style="border-color: #D4AF37;">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-barberhub active" href="{% url 'home' %}">Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-barberhub" href="{% url 'barberias' %}">Barberías</a> 
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-barberhub" href="#">Soporte</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-barberhub" href="#">Sobre Nosotros</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-barberhub" href="#">Contáctanos</a>
+                    </li>
+                </ul>
+
+                <div class="d-flex align-items-center">
+                    {% if user.is_authenticated %}
+                        <span class="navbar-text me-3 text-light">
+                            Bienvenido, <strong style="color: #D4AF37;">{{ user.username }}</strong>
+                        </span>
+                        <form action="{% url 'logout' %}" method="post" class="m-0">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm">Cerrar Sesión</button>
+                        </form>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-outline-gold btn-sm me-2">Iniciar Sesión</a>
+                        <a href="{% url 'registro' %}" class="btn btn-gold btn-sm">Registrarse</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

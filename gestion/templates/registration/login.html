@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>BarberHUB | Iniciar Sesión</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',sans-serif;
+}
+
+body{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:
+    radial-gradient(circle at top,#3d2f00 0%,#111 35%,#000 100%);
+    overflow:hidden;
+}
+
+/* Efecto de luces */
+body::before{
+    content:"";
+    position:absolute;
+    width:500px;
+    height:500px;
+    background:rgba(255,215,0,.08);
+    border-radius:50%;
+    filter:blur(100px);
+    top:-100px;
+    left:-100px;
+}
+
+body::after{
+    content:"";
+    position:absolute;
+    width:500px;
+    height:500px;
+    background:rgba(255,215,0,.08);
+    border-radius:50%;
+    filter:blur(100px);
+    bottom:-100px;
+    right:-100px;
+}
+
+.login-box{
+    position:relative;
+    z-index:2;
+    width:420px;
+    padding:40px;
+    border-radius:25px;
+    background:rgba(15,15,15,.92);
+    backdrop-filter:blur(10px);
+    border:1px solid rgba(255,215,0,.2);
+    box-shadow:
+    0 0 20px rgba(255,215,0,.15),
+    0 0 60px rgba(255,215,0,.08);
+    animation:flotar 4s ease-in-out infinite;
+}
+
+@keyframes flotar{
+    0%,100%{transform:translateY(0);}
+    50%{transform:translateY(-8px);}
+}
+
+.logo{
+    text-align:center;
+    font-size:60px;
+    margin-bottom:10px;
+}
+
+h2{
+    text-align:center;
+    color:#FFD700;
+    margin-bottom:10px;
+    text-transform:uppercase;
+    letter-spacing:2px;
+}
+
+.subtitulo{
+    text-align:center;
+    color:#ccc;
+    margin-bottom:30px;
+}
+
+a{
+    color:#FFD700;
+    text-decoration:none;
+}
+
+a:hover{
+    color:white;
+}
+
+form p{
+    margin-bottom:18px;
+}
+
+form label{
+    color:#FFD700;
+    font-weight:600;
+    display:block;
+    margin-bottom:6px;
+}
+
+form input{
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:12px;
+    background:#1b1b1b;
+    color:white;
+    border:1px solid #333;
+    transition:.3s;
+}
+
+form input:focus{
+    outline:none;
+    border-color:#FFD700;
+    box-shadow:0 0 15px rgba(255,215,0,.4);
+}
+
+button{
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:50px;
+    margin-top:10px;
+    background:linear-gradient(45deg,#FFD700,#d4af37);
+    color:black;
+    font-weight:bold;
+    font-size:16px;
+    cursor:pointer;
+    transition:.3s;
+}
+
+button:hover{
+    transform:scale(1.05);
+    box-shadow:0 0 25px rgba(255,215,0,.5);
+}
+
+.footer{
+    margin-top:25px;
+    text-align:center;
+    color:#999;
+    font-size:14px;
+}
+
+.registro{
+    text-align:center;
+    margin-bottom:20px;
+    color:#ccc;
+}
+
+</style>
+</head>
+<body>
+
+<div class="login-box">
+
+    <div class="logo">💈</div>
+
+    <h2>BarberHUB</h2>
+
+    <p class="subtitulo">
+        Accede a la mejor plataforma para barberías
+    </p>
+
+    <p class="registro">
+        ¿No tienes cuenta?
+        <a href="{% url 'registro' %}">
+            Regístrate aquí
+        </a>
+    </p>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <button type="submit">
+            Entrar al Sistema
+        </button>
+    </form>
+
+    <div class="footer">
+        ¿No tienes cuenta? Contacta al administrador.
+    </div>
+
+</div>
+
+</body>
+</html>

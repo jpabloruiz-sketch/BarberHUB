@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block titulo %}prueba de correo{% endblock %}
+
+{% block contenido %}
+    <div class = "card m-5">
+        <h1>Enviar correo de prueba</h1>
+        <form action="" method="post">{% csrf_token %}
+            <input type="email" name="destino" placeholder=" correo  " class="form-control" required="">
+            <br>
+            <button type="submit" class="btn btn-primary">Enviar</button>
+</form>
+    </div>
+{% endblock %}

@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>BarberHUB | Registro</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',sans-serif;
+}
+
+body{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:#0a0a0a;
+    padding:20px;
+}
+
+/* Card principal */
+.registro-container{
+    width:950px;
+    max-width:100%;
+    min-height:550px;
+    display:flex;
+    overflow:hidden;
+    border-radius:25px;
+    background:#151515;
+    box-shadow:0 0 40px rgba(212,175,55,.2);
+}
+
+/* Panel izquierdo */
+.info{
+    flex:1;
+    background:linear-gradient(
+        135deg,
+        #e5b827,
+        #715e24
+    );
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    padding:40px;
+    text-align:center;
+}
+
+.info .logo{
+    font-size:90px;
+    margin-bottom:20px;
+}
+
+.info h1{
+    color:white;
+    margin-bottom:15px;
+    font-size:2.5rem;
+}
+
+.info p{
+    color:white;
+    line-height:1.8;
+    font-size:1.1rem;
+}
+
+/* Panel derecho */
+.formulario{
+    flex:1.3;
+    padding:50px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+}
+
+.formulario h2{
+    color:white;
+    margin-bottom:10px;
+    font-size:2rem;
+}
+
+.formulario .subtitulo{
+    color:#cfcfcf;
+    margin-bottom:30px;
+}
+
+/* Formulario Django */
+form p{
+    margin-bottom:18px;
+}
+
+form label{
+    color:white;
+    font-weight:600;
+    margin-bottom:6px;
+    display:block;
+}
+
+form input,
+form select,
+form textarea{
+    width:100%;
+    padding:14px;
+    background:#222;
+    border:1px solid #333;
+    border-radius:12px;
+    color:white;
+    transition:.3s;
+}
+
+form input:focus,
+form select:focus,
+form textarea:focus{
+    outline:none;
+    border-color:#d4af37;
+    box-shadow:0 0 15px rgba(212,175,55,.4);
+}
+
+/* Botón */
+button{
+    width:100%;
+    padding:15px;
+    margin-top:10px;
+    border:none;
+    border-radius:50px;
+    background:linear-gradient(45deg,#d4af37,#ffd700);
+    color:black;
+    font-size:16px;
+    font-weight:bold;
+    cursor:pointer;
+    transition:.3s;
+}
+
+button:hover{
+    transform:translateY(-3px);
+    box-shadow:0 0 20px rgba(212,175,55,.5);
+}
+
+/* Link login */
+.login-link{
+    margin-top:25px;
+    text-align:center;
+    color:white;
+}
+
+.login-link a{
+    color:#ffd700;
+    text-decoration:none;
+    font-weight:bold;
+}
+
+.login-link a:hover{
+    color:white;
+}
+
+
+.helptext{
+    display:block;
+    margin-top:8px;
+    padding:12px;
+    background:#1e1e1e;
+    border-left:4px solid #d4af37;
+    border-radius:8px;
+    color:white !important;
+    font-size:14px;
+    line-height:1.5;
+}
+
+.helptext ul{
+    margin-top:8px;
+    padding-left:20px;
+}
+
+.helptext ul li{
+    color:white !important;
+    margin-bottom:5px;
+}
+
+/* Listas de requisitos */
+form ul{
+    background:#1e1e1e;
+    border-left:4px solid #d4af37;
+    border-radius:8px;
+    padding:12px 12px 12px 30px;
+    margin-top:8px;
+    margin-bottom:15px;
+}
+
+form ul li{
+    color:white !important;
+    margin-bottom:6px;
+    line-height:1.4;
+}
+
+/* Errores de formulario */
+.errorlist{
+    list-style:none;
+    padding:12px;
+    margin-top:8px;
+    margin-bottom:10px;
+    background:rgba(255,0,0,.15);
+    border-left:4px solid #ff4d4d;
+    border-radius:8px;
+}
+
+.errorlist li{
+    color:#ff8a8a !important;
+    font-weight:600;
+}
+/* Responsive */
+@media(max-width:900px){
+
+    .registro-container{
+        flex-direction:column;
+    }
+
+    .info{
+        padding:30px;
+    }
+
+    .info .logo{
+        font-size:60px;
+    }
+
+    .formulario{
+        padding:30px;
+    }
+
+}
+
+</style>
+</head>
+<body>
+
+<div class="registro-container">
+
+    <div class="info">
+        <div class="logo">💈</div>
+
+        <h1>BarberHUB</h1>
+
+        <p>
+            Crea tu cuenta y comienza a gestionar
+            tus citas, barberías y servicios desde
+            una sola plataforma moderna.
+        </p>
+    </div>
+
+    <div class="formulario">
+
+        <h2>Crear Cuenta</h2>
+
+        <p class="subtitulo">
+            Regístrate para acceder a BarberHUB.
+        </p>
+
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+
+            <button type="submit">
+                Crear Cuenta
+            </button>
+        </form>
+
+        <div class="login-link">
+            ¿Ya tienes cuenta?
+            <a href="{% url 'login' %}">
+                Inicia sesión aquí
+            </a>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
