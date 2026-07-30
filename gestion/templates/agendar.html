@@ -1,180 +1,274 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BarberHUB | Agendar Cita</title>
+{% extends 'base.html' %}
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css">
+{% block content %}
+<style>
+    /* RESET DE ANCHO PARA OCUPAR EL 100% DE LA PANTALLA */
+    .full-width-wrapper {
+        width: 100vw;
+        position: relative;
+        left: 50%;
+        right: 50%;
+        margin-left: -50vw;
+        margin-right: -50vw;
+        overflow-x: hidden;
+        background-color: #0b0d10;
+        min-height: 90vh;
+    }
 
-    <style>
-        body{
-            background: #0d0d0d;
-            color: #d4af37;
-            font-family: 'Segoe UI', sans-serif;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 30px;
-        }
+    /* GLASSMORPHISM / TARJETAS MODERNAS */
+    .glass-card {
+        background: rgba(22, 27, 34, 0.8) !important;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    }
 
-        .contenedor{
-            width: 100%;
-            max-width: 900px;
-            background: #1a1a1a;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0px 0px 25px rgba(212,175,55,0.25);
-        }
+    .glass-card-hover {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: pointer;
+    }
 
-        h1{
-            text-align: center;
-            color: #d4af37;
-            margin-bottom: 30px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            font-weight: bold;
-        }
+    .glass-card-hover:hover {
+        border-color: rgba(255, 193, 7, 0.6) !important;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(255, 193, 7, 0.15);
+    }
 
-        form p{
-            margin-bottom: 20px;
-        }
+    /* ESTILOS DE FORMULARIO OSCURO */
+    .form-control-dark, .form-select-dark {
+        background-color: #161b22 !important;
+        border: 1px solid rgba(255, 255, 255, 0.15) !important;
+        color: #ffffff !important;
+        padding: 0.8rem 1rem;
+        border-radius: 10px;
+    }
 
-        form label{
-            color: #f5c542;
-            font-weight: 600;
-            display: block;
-            margin-bottom: 5px;
-        }
+    .form-control-dark:focus, .form-select-dark:focus {
+        border-color: #ffc107 !important;
+        box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.25) !important;
+    }
 
-        form input,
-        form select,
-        form textarea{
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #333;
-            border-radius: 10px;
-            background: #111;
-            color: white;
-            transition: 0.3s;
-        }
+    /* PASOS Y CHECKBOX / RADIO CUSTOM */
+    .step-number {
+        width: 32px;
+        height: 32px;
+        background-color: #ffc107;
+        color: #000;
+        font-weight: bold;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
 
-        form input:focus,
-        form select:focus,
-        form textarea:focus{
-            border-color: #d4af37;
-            box-shadow: 0 0 10px rgba(212,175,55,0.5);
-            outline: none;
-        }
+    .service-check:checked + .service-label {
+        border-color: #ffc107 !important;
+        background-color: rgba(255, 193, 7, 0.1) !important;
+    }
 
-        .btn-confirmar{
-            background: linear-gradient(45deg,#d4af37,#ffd700);
-            color: black;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 30px;
-            font-weight: bold;
-            width: 100%;
-            margin-top: 15px;
-            transition: .3s;
-        }
+    .time-slot {
+        transition: all 0.2s ease;
+    }
 
-        .btn-confirmar:hover{
-            transform: scale(1.03);
-            background: linear-gradient(45deg,#ffd700,#d4af37);
-        }
+    .btn-check:checked + .time-slot {
+        background-color: #ffc107 !important;
+        color: #000000 !important;
+        font-weight: bold;
+        border-color: #ffc107 !important;
+    }
+</style>
 
-        .table{
-            margin-top: 40px;
-            color: white;
-            border-radius: 10px;
-            overflow: hidden;
-        }
+<div class="full-width-wrapper py-5 px-3 px-md-5">
+    <div class="container-fluid px-lg-5">
+        
+        <!-- ENCABEZADO -->
+        <div class="text-center mb-5">
+            <span class="badge bg-warning text-dark fw-bold px-4 py-2 text-uppercase mb-3 rounded-pill shadow">
+                Reserva Online • Itagüí
+            </span>
+            <h1 class="display-4 fw-extrabold text-white">Agenda tu <span class="text-warning">Cita</span></h1>
+            <p class="text-secondary fs-5 mx-auto" style="max-width: 650px;">
+                Selecciona la barbería de tu preferencia, escoge a tu barbero, el servicio y el horario que mejor te convenga.
+            </p>
+        </div>
 
-        .table thead{
-            background: #d4af37;
-            color: black;
-        }
+        <form method="post" action="{% url 'agendar' %}">
+            {% csrf_token %}
+            <div class="row g-4">
+                
+                <!-- COLUMNA IZQUIERDA: PASOS DE SELECCIÓN (2/3) -->
+                <div class="col-lg-8">
+                    
+                    <!-- PASO 1: BARBERÍA Y BARBERO -->
+                    <div class="card glass-card text-white rounded-4 p-4 mb-4 shadow">
+                        <div class="d-flex align-items-center gap-3 mb-4">
+                            <span class="step-number">1</span>
+                            <h3 class="h4 m-0 fw-bold">Barbería y Barbero</h3>
+                        </div>
 
-        .table tbody tr{
-            background: #222;
-        }
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-secondary small fw-bold">SELECCIONA BARBERÍA</label>
+                                <select class="form-select form-select-dark" name="barberia" required>
+                                    <option value="" selected disabled>Elige un establecimiento...</option>
+                                    <option value="viveros">Viveros Barber Studio - Santa María</option>
+                                    <option value="estilo">Barbería El Estilo - Centro</option>
+                                    <option value="urban">Urban Cuts - Ditaires</option>
+                                </select>
+                            </div>
 
-        .table tbody tr:hover{
-            background: #333;
-        }
+                            <div class="col-md-6">
+                                <label class="form-label text-secondary small fw-bold">BARBERO DE PREFERENCIA</label>
+                                <select class="form-select form-select-dark" name="barbero">
+                                    <option value="" selected>Cualquier barbero disponible</option>
+                                    <option value=" Mateo">Mateo Viveros (Master Barber)</option>
+                                    <option value="Carlos">Carlos Arango (Fade Specialist)</option>
+                                    <option value="Santi">Santiago Gómez (Estilo Libre / Color)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
 
-        .table td,
-        .table th{
-            border-color: #444;
-            padding: 15px;
-        }
+                    <!-- PASO 2: SERVICIOS -->
+                    <div class="card glass-card text-white rounded-4 p-4 mb-4 shadow">
+                        <div class="d-flex align-items-center gap-3 mb-4">
+                            <span class="step-number">2</span>
+                            <h3 class="h4 m-0 fw-bold">Elige tus Servicios</h3>
+                        </div>
 
-        @media(max-width:768px){
-            .contenedor{
-                padding: 20px;
-            }
+                        <div class="row g-3">
+                            <!-- Servicio 1 -->
+                            <div class="col-md-6">
+                                <input type="checkbox" class="btn-check service-check" id="service1" name="servicios" value="corte" autocomplete="off">
+                                <label class="card glass-card glass-card-hover service-label p-3 h-100 rounded-3 text-white border" for="service1">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="fw-bold fs-5">Corte Tradicional / Fade</span>
+                                        <span class="text-warning fw-bold fs-5">$25.000</span>
+                                    </div>
+                                    <p class="text-secondary small m-0">Incluye lavado, asesoría de imagen y peinado con cera mate.</p>
+                                </label>
+                            </div>
 
-            h1{
-                font-size: 1.8rem;
-            }
-        }
-    </style>
-</head>
+                            <!-- Servicio 2 -->
+                            <div class="col-md-6">
+                                <input type="checkbox" class="btn-check service-check" id="service2" name="servicios" value="barba" autocomplete="off">
+                                <label class="card glass-card glass-card-hover service-label p-3 h-100 rounded-3 text-white border" for="service2">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="fw-bold fs-5">Perfilado de Barba</span>
+                                        <span class="text-warning fw-bold fs-5">$18.000</span>
+                                    </div>
+                                    <p class="text-secondary small m-0">Ritual con toalla caliente, aceite hidratante y navaja clásica.</p>
+                                </label>
+                            </div>
 
-<body>
+                            <!-- Servicio 3 -->
+                            <div class="col-md-6">
+                                <input type="checkbox" class="btn-check service-check" id="service3" name="servicios" value="combo" autocomplete="off">
+                                <label class="card glass-card glass-card-hover service-label p-3 h-100 rounded-3 text-white border" for="service3">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="fw-bold fs-5">Combo VIP (Corte + Barba)</span>
+                                        <span class="text-warning fw-bold fs-5">$38.000</span>
+                                    </div>
+                                    <p class="text-secondary small m-0">Experiencia completa con mascarilla negra y bebida de cortesía.</p>
+                                </label>
+                            </div>
 
-<div class="contenedor">
+                            <!-- Servicio 4 -->
+                            <div class="col-md-6">
+                                <input type="checkbox" class="btn-check service-check" id="service4" name="servicios" value="pigmentacion" autocomplete="off">
+                                <label class="card glass-card glass-card-hover service-label p-3 h-100 rounded-3 text-white border" for="service4">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="fw-bold fs-5">Pigmentación / Tinte</span>
+                                        <span class="text-warning fw-bold fs-5">$22.000</span>
+                                    </div>
+                                    <p class="text-secondary small m-0">Definición extrema para cerquillos y corrección de imperfecciones.</p>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
 
-    <h1>💈 Agenda tu Cita</h1>
+                    <!-- PASO 3: FECHA Y HORA -->
+                    <div class="card glass-card text-white rounded-4 p-4 shadow">
+                        <div class="d-flex align-items-center gap-3 mb-4">
+                            <span class="step-number">3</span>
+                            <h3 class="h4 m-0 fw-bold">Fecha y Hora</h3>
+                        </div>
 
-    <form method="post">
-        {% csrf_token %}
+                        <div class="row g-4">
+                            <div class="col-md-5">
+                                <label class="form-label text-secondary small fw-bold">FECHA DE CITAS</label>
+                                <input type="date" class="form-control form-control-dark" name="fecha" required>
+                            </div>
 
-        {{ form.as_p }}
+                            <div class="col-md-7">
+                                <label class="form-label text-secondary small fw-bold">HORAS DISPONIBLES</label>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <input type="radio" class="btn-check" name="hora" id="t1" value="09:00" required>
+                                    <label class="btn btn-outline-secondary time-slot text-white border-secondary rounded-pill px-3" for="t1">09:00 AM</label>
 
-        <button class="btn-confirmar" type="submit">
-            Confirmar Cita
-        </button>
+                                    <input type="radio" class="btn-check" name="hora" id="t2" value="10:30">
+                                    <label class="btn btn-outline-secondary time-slot text-white border-secondary rounded-pill px-3" for="t2">10:30 AM</label>
 
-        <table class="table table-dark mt-5">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Cliente</th>
-                    <th>Servicio</th>
-                    <th>Hora</th>
-                </tr>
-            </thead>
+                                    <input type="radio" class="btn-check" name="hora" id="t3" value="02:00">
+                                    <label class="btn btn-outline-secondary time-slot text-white border-secondary rounded-pill px-3" for="t3">02:00 PM</label>
 
-            <tbody>
-                <tr>
-                    <th>1</th>
-                    <td>Juan</td>
-                    <td>Corte Clásico</td>
-                    <td>10:00 AM</td>
-                </tr>
+                                    <input type="radio" class="btn-check" name="hora" id="t4" value="03:30">
+                                    <label class="btn btn-outline-secondary time-slot text-white border-secondary rounded-pill px-3" for="t4">03:30 PM</label>
 
-                <tr>
-                    <th>2</th>
-                    <td>Carlos</td>
-                    <td>Barba Premium</td>
-                    <td>11:30 AM</td>
-                </tr>
+                                    <input type="radio" class="btn-check" name="hora" id="t5" value="05:00">
+                                    <label class="btn btn-outline-secondary time-slot text-white border-secondary rounded-pill px-3" for="t5">05:00 PM</label>
 
-                <tr>
-                    <th>3</th>
-                    <td>Andrés</td>
-                    <td>Corte + Barba</td>
-                    <td>02:00 PM</td>
-                </tr>
-            </tbody>
-        </table>
+                                    <input type="radio" class="btn-check" name="hora" id="t6" value="06:30">
+                                    <label class="btn btn-outline-secondary time-slot text-white border-secondary rounded-pill px-3" for="t6">06:30 PM</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-    </form>
+                </div>
 
+                <!-- COLUMNA DERECHA: RESUMEN DE LA RESERVA (1/3) -->
+                <div class="col-lg-4">
+                    <div class="card glass-card text-white rounded-4 p-4 shadow sticky-top" style="top: 2rem;">
+                        <h4 class="fw-bold mb-4 pb-3 border-bottom border-secondary">
+                            📋 Resumen de Cita
+                        </h4>
+
+                        <!-- DATOS DEL CLIENTE -->
+                        <div class="mb-4">
+                            <label class="form-label text-secondary small fw-bold">DATOS DE CONTACTO</label>
+                            <input type="text" class="form-control form-control-dark mb-2" placeholder="Nombre completo" name="nombre_cliente" value="{{ user.username }}" required>
+                            <input type="tel" class="form-control form-control-dark" placeholder="Teléfono / WhatsApp" name="telefono" required>
+                        </div>
+
+                        <!-- DETALLE DE PRECIOS -->
+                        <ul class="list-unstyled text-secondary small mb-4">
+                            <li class="d-flex justify-content-between mb-2">
+                                <span>Plataforma de Reserva</span>
+                                <span class="text-success fw-bold">GRATIS</span>
+                            </li>
+                            <li class="d-flex justify-content-between mb-2">
+                                <span>Ubicación</span>
+                                <span class="text-white">Itagüí, Antioquia</span>
+                            </li>
+                        </ul>
+
+                        <hr class="border-secondary opacity-50 my-4">
+
+                        <!-- BOTÓN CONFIRMAR -->
+                        <button type="submit" class="btn btn-warning btn-lg fw-bold w-100 py-3 rounded-pill text-dark shadow btn-hover-scale">
+                            ✅ Confirmar y Agendar
+                        </button>
+
+                        <p class="text-center text-secondary small mt-3 m-0">
+                            🔒 Pago en el establecimiento al finalizar tu corte.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </form>
+
+    </div>
 </div>
-
-</body>
-</html>
+{% endblock %}
