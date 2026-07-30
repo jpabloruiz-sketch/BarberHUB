@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="/Logo - BarberHUB.png">
     <title>BarberHUB</title>
+    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
     <style>
@@ -12,106 +14,153 @@
             color: #ffffff; /* Letras blancas por defecto */
         }
         
-        /* Navbar Negro */
+        /* Navbar Negro y Fijo */
         .navbar-barberhub {
             background-color: #000000 !important;
-            border-bottom: 2px solid #D4AF37; /* Línea delgada dorada abajo del menú */
+            border-bottom: 2px solid #ffc107; /* Línea delgada amarilla/dorada */
         }
 
-        /* Texto Dorado para la Marca */
+        /* Texto Dorado/Amarillo para la Marca */
         .brand-gold {
-            color: #D4AF37 !important;
+            color: #ffc107 !important;
             font-size: 24px;
             letter-spacing: 1px;
+            transition: transform 0.3s ease;
+        }
+        .brand-gold:hover {
+            transform: scale(1.03);
         }
 
-        /* Enlaces del menú en blanco que cambian a dorado al pasar el mouse */
+        /* Enlaces del Menú Centrados */
         .nav-link-barberhub {
             color: #ffffff !important;
             font-weight: 500;
-            transition: color 0.3s ease;
-        }
-        .nav-link-barberhub:hover, .nav-link-barberhub.active {
-            color: #D4AF37 !important;
+            padding: 8px 16px !important;
+            border-radius: 6px;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
         }
 
-        /* Botón Dorado con letras negras */
+        /* Al pasar el mouse o estar activo -> Se queda en Amarillo constante */
+        .nav-link-barberhub:hover, 
+        .nav-link-barberhub:focus, 
+        .nav-link-barberhub.active {
+            color: #ffc107 !important;
+            background-color: rgba(255, 193, 7, 0.15) !important; /* Fondo sutil amarillo */
+            border-bottom: 2px solid #ffc107 !important;
+            font-weight: bold;
+        }
+
+        /* Botón Dorado/Amarillo Relleno */
         .btn-gold {
-            background-color: #D4AF37 !important;
+            background-color: #ffc107 !important;
             color: #000000 !important;
-            border: 1px solid #D4AF37 !important;
+            border: 2px solid #ffc107 !important;
             font-weight: bold;
             transition: all 0.3s ease;
         }
-        .btn-gold:hover {
-            background-color: #000000 !important;
-            color: #D4AF37 !important;
+        .btn-gold:hover, 
+        .btn-gold:focus, 
+        .btn-gold:active {
+            background-color: #ffcd39 !important;
+            border-color: #ffcd39 !important;
+            color: #000000 !important;
+            box-shadow: 0 0 15px rgba(255, 193, 7, 0.6) !important;
+            transform: translateY(-2px);
         }
 
-        /* Botón Negro con borde y letras doradas */
+        /* Botón Transparente */
         .btn-outline-gold {
             background-color: transparent !important;
-            color: #D4AF37 !important;
-            border: 1px solid #D4AF37 !important;
-            font-weight: 500;
+            color: #ffc107 !important;
+            border: 2px solid #ffc107 !important;
+            font-weight: 600;
+            transition: all 0.3s ease;
         }
-        .btn-outline-gold:hover {
-            background-color: #D4AF37 !important;
+        .btn-outline-gold:hover, 
+        .btn-outline-gold:focus, 
+        .btn-outline-gold:active {
+            background-color: #ffc107 !important;
             color: #000000 !important;
+            box-shadow: 0 0 15px rgba(255, 193, 7, 0.6) !important;
+            transform: translateY(-2px);
         }
     </style>
 </head>
 <body>
 
-    <nav class="navbar navbar-expand-lg navbar-dark navbar-barberhub shadow-lg py-3">
+    <!-- Header / Navbar Principal -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-barberhub shadow-lg py-3 sticky-top">
         <div class="container">
-            <a class="navbar-brand fw-bold brand-gold" href="{% url 'home' %}">💈 BarberHUB</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" style="border-color: #D4AF37;">
+            <!-- Marca / Logo -->
+            <a class="navbar-brand fw-bold brand-gold me-4" href="{% url 'home' %}">💈 BarberHUB</a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" style="border-color: #ffc107;">
                 <span class="navbar-toggler-icon"></span>
             </button>
             
+            <!-- Contenido Colapsable (Centrado) -->
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                
+                <!-- Menú de Navegación Centrado Dinámico -->
+                <ul class="navbar-nav mx-auto text-center my-2 my-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link nav-link-barberhub active" href="{% url 'home' %}">Inicio</a>
+                        <a class="nav-link nav-link-barberhub {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'inicio' %}">Inicio</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link nav-link-barberhub" href="{% url 'barberias' %}">Barberías</a> 
+                        <a class="nav-link nav-link-barberhub {% if request.resolver_match.url_name == 'barberias' %}active{% endif %}" href="{% url 'barberias' %}">Barberías</a> 
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link nav-link-barberhub" href="#">Soporte</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link nav-link-barberhub" href="#">Sobre Nosotros</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link nav-link-barberhub" href="#">Contáctanos</a>
+                        <a class="nav-link nav-link-barberhub {% if request.resolver_match.url_name == 'soporte' %}active{% endif %}" href="{% url 'soporte' %}">Soporte y contacto</a>
                     </li>
                 </ul>
 
-                <div class="d-flex align-items-center">
+                <!-- Sección de Usuario / Autenticación -->
+                <div class="d-flex align-items-center justify-content-center mt-3 mt-lg-0">
                     {% if user.is_authenticated %}
                         <span class="navbar-text me-3 text-light">
-                            Bienvenido, <strong style="color: #D4AF37;">{{ user.username }}</strong>
+                            Bienvenido, <strong style="color: #ffc107;">{{ user.username }}</strong>
                         </span>
                         <form action="{% url 'logout' %}" method="post" class="m-0">
                             {% csrf_token %}
-                            <button type="submit" class="btn btn-danger btn-sm">Cerrar Sesión</button>
+                            <button type="submit" class="btn btn-danger btn-sm rounded-pill px-3">Cerrar Sesión</button>
                         </form>
                     {% else %}
-                        <a href="{% url 'login' %}" class="btn btn-outline-gold btn-sm me-2">Iniciar Sesión</a>
-                        <a href="{% url 'registro' %}" class="btn btn-gold btn-sm">Registrarse</a>
+                        <a href="{% url 'login' %}" class="btn btn-outline-gold btn-sm me-2 rounded-pill px-3">Iniciar Sesión</a>
+                        <a href="{% url 'registro' %}" class="btn btn-gold btn-sm rounded-pill px-3">Registrarse</a>
                     {% endif %}
                 </div>
+
             </div>
         </div>
     </nav>
 
-    <div class="container mt-5">
+    <!-- Contenido dinámico de las vistas -->
+    <div class="container mt-4">
         {% block content %}
         {% endblock %}
     </div>
 
+    <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Script para resaltar dinámicamente la página activa en el menú -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const currentPath = window.location.pathname;
+            const navLinks = document.querySelectorAll('.nav-link-barberhub');
+
+            navLinks.forEach(link => {
+                const linkPath = link.getAttribute('href');
+                
+                // Si la ruta del botón coincide exactamente con la URL actual del navegador
+                if (linkPath && linkPath !== '#' && currentPath === linkPath) {
+                    // Remover 'active' de todos los demás enlaces primero
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
 </body>
 </html>

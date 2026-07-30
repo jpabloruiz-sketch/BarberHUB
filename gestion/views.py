@@ -21,7 +21,7 @@ def registro(request):
 
 def home(request):
     sucursales = Sucursal.objects.all()
-    return render(request, 'home.html', {'sucursales': sucursales})
+    return render(request, 'inicio.html', {'sucursales': sucursales})
 
 @login_required # Esto obliga a loguearse para ver esta vista
 def agendar_cita(request):
@@ -48,3 +48,6 @@ def correo_prueba(request):
 
 def barberias(request):
     return render(request, 'barberias.html')
+
+def soporte(request):
+    return render(request, 'soporte.html')
