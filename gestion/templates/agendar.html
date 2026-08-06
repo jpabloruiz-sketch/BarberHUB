@@ -66,15 +66,11 @@
         background-color: rgba(255, 193, 7, 0.1) !important;
     }
 
-    .time-slot {
-        transition: all 0.2s ease;
-    }
-
-    .btn-check:checked + .time-slot {
-        background-color: #ffc107 !important;
-        color: #000000 !important;
-        font-weight: bold;
-        border-color: #ffc107 !important;
+    .schedule-badge {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        padding: 8px 12px;
     }
 </style>
 
@@ -95,7 +91,7 @@
         <form method="post" action="{% url 'agendar' %}">
             {% csrf_token %}
             
-            <!-- Guardamos el ID de la barbería seleccionada en el envío del formulario -->
+            <!-- Guardamos el ID de la barbería seleccionada -->
             {% if barberia_seleccionada %}
                 <input type="hidden" name="barberia_id" value="{{ barberia_seleccionada.id }}">
             {% endif %}
@@ -106,43 +102,46 @@
                 <div class="col-lg-8">
                     
                     <!-- PASO 1: BARBERÍA Y BARBERO -->
-                    <div class="card glass-card text-white rounded-4 p-4 mb-4 shadow">
-                        <div class="d-flex align-items-center gap-3 mb-4">
-                            <span class="step-number">1</span>
-                            <h3 class="h4 m-0 fw-bold">Barbería y Barbero</h3>
-                        </div>
+<div class="card glass-card text-white rounded-4 p-4 mb-4 shadow">
+    <div class="d-flex align-items-center gap-3 mb-4">
+        <span class="step-number">1</span>
+        <h3 class="h4 m-0 fw-bold">Barbería y Barbero</h3>
+    </div>
 
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label class="form-label text-secondary small fw-bold">SELECCIONA BARBERÍA</label>
-                                <select class="form-select form-select-dark" name="barberia_select" onchange="location = this.value;" required>
-                                    {% if not barberia_seleccionada %}
-                                        <option value="" selected disabled>Elige un establecimiento...</option>
-                                    {% endif %}
+    <div class="row g-3">
+        <div class="col-md-6">
+            <label class="form-label text-secondary small fw-bold">BARBERÍA SELECCIONADA</label>
+            {% if barberia_seleccionada %}
+                <!-- Muestra solo la barbería seleccionada -->
+                <input type="text" class="form-control form-control-dark" value="{{ barberia_seleccionada.nombre }} - {{ barberia_seleccionada.barrio|default:'Itagüí' }}" readonly>
+                <input type="hidden" name="barberia_select" value="{{ barberia_seleccionada.id }}">
+            {% else %}
+                <select class="form-select form-select-dark" name="barberia_select" onchange="location = this.value;" required>
+                    <option value="" selected disabled>Elige un establecimiento...</option>
+                    {% for b in barberias %}
+                        <option value="{% url 'agendar' %}?barberia_id={{ b.id }}">
+                            {{ b.nombre }} - {{ b.barrio|default:"Itagüí" }}
+                        </option>
+                    {% endfor %}
+                </select>
+            {% endif %}
+        </div>
 
-                                    {% for b in barberias %}
-                                        <option value="{% url 'agendar' %}?barberia_id={{ b.id }}" {% if barberia_seleccionada and barberia_seleccionada.id == b.id %}selected{% endif %}>
-                                            {{ b.nombre }} - {{ b.barrio|default:"Itagüí" }}
-                                        </option>
-                                    {% endfor %}
-                                </select>
-                            </div>
+        <div class="col-md-6">
+            <label class="form-label text-secondary small fw-bold">BARBERO DE PREFERENCIA</label>
+            <select class="form-select form-select-dark" name="barbero">
+                <option value="" selected>Cualquier barbero disponible</option>
+                {% if barberia_seleccionada %}
+                    <option value="{{ barberia_seleccionada.dueno.username }}">
+                        {{ barberia_seleccionada.dueno.username }} (Barbero Principal)
+                    </option>
+                {% endif %}
+            </select>
+        </div>
+    </div>
+</div>
 
-                            <div class="col-md-6">
-                                <label class="form-label text-secondary small fw-bold">BARBERO DE PREFERENCIA</label>
-                                <select class="form-select form-select-dark" name="barbero">
-                                    <option value="" selected>Cualquier barbero disponible</option>
-                                    {% if barberia_seleccionada %}
-                                        <option value="{{ barberia_seleccionada.dueno.username }}">
-                                            {{ barberia_seleccionada.dueno.username }} (Barbero Principal)
-                                        </option>
-                                    {% endif %}
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- PASO 2: SERVICIOS DINÁMICOS -->
+                    <!-- PASO 2: SERVICIOS DINÁMICOS CON PRECIOS EN COP -->
                     <div class="card glass-card text-white rounded-4 p-4 mb-4 shadow">
                         <div class="d-flex align-items-center gap-3 mb-4">
                             <span class="step-number">2</span>
@@ -157,7 +156,10 @@
                                         <label class="card glass-card glass-card-hover service-label p-3 h-100 rounded-3 text-white border" for="service_{{ s.id }}">
                                             <div class="d-flex justify-content-between align-items-center mb-2">
                                                 <span class="fw-bold fs-5">{{ s.nombre }}</span>
-                                                <span class="text-warning fw-bold fs-5">${{ s.precio }}</span>
+                                                <!-- PRECIO FORMATEADO DINÁMICAMENTE -->
+                                                <span class="text-warning fw-bold fs-5 precio-cop" data-precio="{{ s.precio }}">
+                                                    $ {{ s.precio }} COP
+                                                </span>
                                             </div>
                                             <p class="text-secondary small m-0">⏱️ Duración aproximada: {{ s.duracion_minutos }} min.</p>
                                         </label>
@@ -171,40 +173,45 @@
                         </div>
                     </div>
 
-                    <!-- PASO 3: FECHA Y HORA -->
+                    <!-- PASO 3: FECHA Y HORARIOS CONFIGURADOS POR EL BARBERO -->
                     <div class="card glass-card text-white rounded-4 p-4 shadow">
                         <div class="d-flex align-items-center gap-3 mb-4">
                             <span class="step-number">3</span>
                             <h3 class="h4 m-0 fw-bold">Fecha y Hora</h3>
                         </div>
 
+                        <!-- SECCIÓN DE HORARIOS REALES DE ATENCIÓN -->
+                        {% if horarios %}
+                            <div class="mb-4">
+                                <label class="form-label text-secondary small fw-bold d-block mb-2">⏰ HORARIO DE ATENCIÓN DE ESTA BARBERÍA</label>
+                                <div class="d-flex flex-wrap gap-2">
+                                    {% for h in horarios %}
+                                        <div class="schedule-badge">
+                                            <strong class="text-warning">{{ h.get_dia_display }}:</strong> 
+                                            <span class="text-white small">
+                                                {{ h.hora_apertura|time:"g:i" }} {% if h.hora_apertura.hour >= 12 %}PM{% else %}AM{% endif %} 
+                                                a 
+                                                {{ h.hora_cierre|time:"g:i" }} {% if h.hora_cierre.hour >= 12 %}PM{% else %}AM{% endif %}
+                                            </span>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-dark border-secondary text-secondary small mb-4">
+                                ℹ️ Esta barbería aún no registra un horario fijo, pero puedes elegir una hora dentro de la jornada estándar.
+                            </div>
+                        {% endif %}
+
                         <div class="row g-4">
-                            <div class="col-md-5">
+                            <div class="col-md-6">
                                 <label class="form-label text-secondary small fw-bold">FECHA DE CITA</label>
                                 <input type="date" class="form-control form-control-dark" name="fecha" required>
                             </div>
 
-                            <div class="col-md-7">
-                                <label class="form-label text-secondary small fw-bold">HORAS DISPONIBLES</label>
-                                <div class="d-flex flex-wrap gap-2">
-                                    <input type="radio" class="btn-check" name="hora" id="t1" value="09:00" required>
-                                    <label class="btn btn-outline-secondary time-slot text-white border-secondary rounded-pill px-3" for="t1">09:00 AM</label>
-
-                                    <input type="radio" class="btn-check" name="hora" id="t2" value="10:30">
-                                    <label class="btn btn-outline-secondary time-slot text-white border-secondary rounded-pill px-3" for="t2">10:30 AM</label>
-
-                                    <input type="radio" class="btn-check" name="hora" id="t3" value="14:00">
-                                    <label class="btn btn-outline-secondary time-slot text-white border-secondary rounded-pill px-3" for="t3">02:00 PM</label>
-
-                                    <input type="radio" class="btn-check" name="hora" id="t4" value="15:30">
-                                    <label class="btn btn-outline-secondary time-slot text-white border-secondary rounded-pill px-3" for="t4">03:30 PM</label>
-
-                                    <input type="radio" class="btn-check" name="hora" id="t5" value="17:00">
-                                    <label class="btn btn-outline-secondary time-slot text-white border-secondary rounded-pill px-3" for="t5">05:00 PM</label>
-
-                                    <input type="radio" class="btn-check" name="hora" id="t6" value="18:30">
-                                    <label class="btn btn-outline-secondary time-slot text-white border-secondary rounded-pill px-3" for="t6">06:30 PM</label>
-                                </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-secondary small fw-bold">HORA DESEADA</label>
+                                <input type="time" class="form-control form-control-dark" name="hora" required>
                             </div>
                         </div>
                     </div>
@@ -261,4 +268,22 @@
 
     </div>
 </div>
+
+<!-- SCRIPT PARA FORMATEAR LOS PRECIOS A PESOS COLOMBIANOS ($ 20.000 COP) -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const precios = document.querySelectorAll('.precio-cop');
+        precios.forEach(el => {
+            let valor = el.getAttribute('data-precio');
+            if (valor) {
+                let numero = parseInt(valor, 10);
+                if (!isNaN(numero)) {
+                    // Formato en Pesos Colombianos con separadores de miles (.)
+                    el.textContent = '$ ' + numero.toLocaleString('es-CO') + ' COP';
+                }
+            }
+        });
+    });
+</script>
+
 {% endblock %}

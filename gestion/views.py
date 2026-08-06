@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.core.mail import send_mail
 from .models import Barberia, Servicio, HorarioAtencion, Cita, PerfilUsuario
 
-# Función auxiliar para convertir las 12 horas + AM/PM a formato 24 horas para la BD
+# Función auxiliar para formatear la hora (12 horas AM/PM -> 24 horas para la BD)
 def construir_hora(hora_val, min_val, ampm_val, fallback_str=None):
     if hora_val and min_val and ampm_val:
         try:
@@ -28,14 +28,25 @@ def home(request):
     return render(request, 'inicio.html', {'barberias': barberias})
 
 def barberias(request):
-    lista_barberias = Barberia.objects.all()
+    lista_barberias = Barberia.objects.prefetch_related('horarios').all()
     return render(request, 'barberias.html', {'barberias': lista_barberias})
 
 def soporte(request):
     return render(request, 'soporte.html')
 
+@login_required
 def pagar_plan(request):
-    return render(request, 'pagar_plan.html')
+    barberia = Barberia.objects.filter(dueno=request.user).first()
+    
+    if request.method == 'POST':
+        nuevo_plan = request.POST.get('plan')
+        if barberia and nuevo_plan:
+            barberia.plan_actual = nuevo_plan
+            barberia.save()
+            messages.success(request, '¡Has actualizado tu plan exitosamente!')
+            return redirect('pagar_plan')
+            
+    return render(request, 'pagar_plan.html', {'barberia': barberia})
 
 
 # ================= AUTENTICACIÓN =================
@@ -61,25 +72,32 @@ def registro(request):
 
 @login_required
 def agendar_cita(request):
-    todas_barberias = Barberia.objects.all()
     barberia_id = request.GET.get('barberia_id')
-    
+    barberia_seleccionada = None
+
+    # Si viene el parámetro de barbería por URL, filtramos SOLO esa barbería
     if barberia_id:
         barberia_seleccionada = Barberia.objects.filter(id=barberia_id).first()
+        todas_barberias = [barberia_seleccionada] if barberia_seleccionada else []
     else:
-        barberia_seleccionada = todas_barberias.first()
+        # Si no se pasó ID, cargamos las barberías para que el usuario escoja una
+        todas_barberias = Barberia.objects.all()
 
     servicios = []
+    horarios = []
     if barberia_seleccionada:
         servicios = barberia_seleccionada.servicios.all()
+        horarios = barberia_seleccionada.horarios.all()
 
     if request.method == 'POST':
-        return redirect('home')
+        messages.success(request, '¡Tu cita ha sido agendada con éxito!')
+        return redirect('inicio')
 
     return render(request, 'agendar.html', {
         'barberias': todas_barberias,
         'barberia_seleccionada': barberia_seleccionada,
-        'servicios': servicios
+        'servicios': servicios,
+        'horarios': horarios
     })
 
 
@@ -90,7 +108,7 @@ def panel_barbero(request):
     perfil, _ = PerfilUsuario.objects.get_or_create(user=request.user)
     if perfil.rol != 'BARBERO':
         messages.warning(request, 'Esta sección es exclusiva para barberos registrados.')
-        return redirect('home')
+        return redirect('inicio')
 
     barberia = Barberia.objects.filter(dueno=request.user).first()
 
@@ -139,7 +157,6 @@ def agregar_servicio(request):
         barberia = Barberia.objects.filter(dueno=request.user).first()
         if barberia:
             nombre = request.POST.get('nombre')
-            # Limpiamos puntos y comas para guardarlo como número entero
             precio_raw = request.POST.get('precio', '0').replace('.', '').replace(',', '').replace('$', '').strip()
             precio = int(precio_raw) if precio_raw.isdigit() else 0
             duracion = request.POST.get('duracion', 30)
@@ -158,7 +175,6 @@ def editar_servicio(request, servicio_id):
     if request.method == 'POST':
         servicio = get_object_or_404(Servicio, id=servicio_id, barberia__dueno=request.user)
         servicio.nombre = request.POST.get('nombre')
-        # Limpiamos puntos antes de actualizar en BD
         precio_raw = request.POST.get('precio', '0').replace('.', '').replace(',', '').replace('$', '').strip()
         servicio.precio = int(precio_raw) if precio_raw.isdigit() else 0
         servicio.duracion_minutos = request.POST.get('duracion')

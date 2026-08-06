@@ -16,12 +16,18 @@ class PerfilUsuario(models.Model):
 
 # 2. SUCURSAL / BARBERÍA
 class Barberia(models.Model):
+    PLANES = (
+        ('INDIVIDUAL', 'Plan Individual ($80.000 COP)'),
+        ('STUDIO', 'Plan Studio ($150.000 COP)'),
+        ('ELITE', 'Plan Élite ($200.000 COP)'),
+    )
     dueno = models.ForeignKey(User, on_delete=models.CASCADE, related_name='barberias')
     nombre = models.CharField(max_length=100)
     direccion = models.CharField(max_length=255)
     barrio = models.CharField(max_length=100, default='Itagüí')
     descripcion = models.TextField(blank=True, help_text="Ej: Especialistas en fades, perfilado de barba...")
     google_maps_link = models.URLField(blank=True)
+    plan_actual = models.CharField(max_length=20, choices=PLANES, default='INDIVIDUAL') # NUEVO CAMPO
 
     def __str__(self):
         return f"{self.nombre} ({self.barrio})"
