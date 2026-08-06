@@ -88,12 +88,18 @@
             </span>
             <h1 class="display-4 fw-extrabold text-white">Agenda tu <span class="text-warning">Cita</span></h1>
             <p class="text-secondary fs-5 mx-auto" style="max-width: 650px;">
-                Selecciona la barbería de tu preferencia, escoge a tu barbero, el servicio y el horario que mejor te convenga.
+                Selecciona la barbería de tu preferencia, escoge los servicios disponibles y agenda en el horario que mejor te convenga.
             </p>
         </div>
 
         <form method="post" action="{% url 'agendar' %}">
             {% csrf_token %}
+            
+            <!-- Guardamos el ID de la barbería seleccionada en el envío del formulario -->
+            {% if barberia_seleccionada %}
+                <input type="hidden" name="barberia_id" value="{{ barberia_seleccionada.id }}">
+            {% endif %}
+
             <div class="row g-4">
                 
                 <!-- COLUMNA IZQUIERDA: PASOS DE SELECCIÓN (2/3) -->
@@ -109,11 +115,16 @@
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="form-label text-secondary small fw-bold">SELECCIONA BARBERÍA</label>
-                                <select class="form-select form-select-dark" name="barberia" required>
-                                    <option value="" selected disabled>Elige un establecimiento...</option>
-                                    <option value="viveros">Viveros Barber Studio - Santa María</option>
-                                    <option value="estilo">Barbería El Estilo - Centro</option>
-                                    <option value="urban">Urban Cuts - Ditaires</option>
+                                <select class="form-select form-select-dark" name="barberia_select" onchange="location = this.value;" required>
+                                    {% if not barberia_seleccionada %}
+                                        <option value="" selected disabled>Elige un establecimiento...</option>
+                                    {% endif %}
+
+                                    {% for b in barberias %}
+                                        <option value="{% url 'agendar' %}?barberia_id={{ b.id }}" {% if barberia_seleccionada and barberia_seleccionada.id == b.id %}selected{% endif %}>
+                                            {{ b.nombre }} - {{ b.barrio|default:"Itagüí" }}
+                                        </option>
+                                    {% endfor %}
                                 </select>
                             </div>
 
@@ -121,15 +132,17 @@
                                 <label class="form-label text-secondary small fw-bold">BARBERO DE PREFERENCIA</label>
                                 <select class="form-select form-select-dark" name="barbero">
                                     <option value="" selected>Cualquier barbero disponible</option>
-                                    <option value=" Mateo">Mateo Viveros (Master Barber)</option>
-                                    <option value="Carlos">Carlos Arango (Fade Specialist)</option>
-                                    <option value="Santi">Santiago Gómez (Estilo Libre / Color)</option>
+                                    {% if barberia_seleccionada %}
+                                        <option value="{{ barberia_seleccionada.dueno.username }}">
+                                            {{ barberia_seleccionada.dueno.username }} (Barbero Principal)
+                                        </option>
+                                    {% endif %}
                                 </select>
                             </div>
                         </div>
                     </div>
 
-                    <!-- PASO 2: SERVICIOS -->
+                    <!-- PASO 2: SERVICIOS DINÁMICOS -->
                     <div class="card glass-card text-white rounded-4 p-4 mb-4 shadow">
                         <div class="d-flex align-items-center gap-3 mb-4">
                             <span class="step-number">2</span>
@@ -137,53 +150,24 @@
                         </div>
 
                         <div class="row g-3">
-                            <!-- Servicio 1 -->
-                            <div class="col-md-6">
-                                <input type="checkbox" class="btn-check service-check" id="service1" name="servicios" value="corte" autocomplete="off">
-                                <label class="card glass-card glass-card-hover service-label p-3 h-100 rounded-3 text-white border" for="service1">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <span class="fw-bold fs-5">Corte Tradicional / Fade</span>
-                                        <span class="text-warning fw-bold fs-5">$25.000</span>
+                            {% if servicios %}
+                                {% for s in servicios %}
+                                    <div class="col-md-6">
+                                        <input type="checkbox" class="btn-check service-check" id="service_{{ s.id }}" name="servicios" value="{{ s.id }}" autocomplete="off">
+                                        <label class="card glass-card glass-card-hover service-label p-3 h-100 rounded-3 text-white border" for="service_{{ s.id }}">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <span class="fw-bold fs-5">{{ s.nombre }}</span>
+                                                <span class="text-warning fw-bold fs-5">${{ s.precio }}</span>
+                                            </div>
+                                            <p class="text-secondary small m-0">⏱️ Duración aproximada: {{ s.duracion_minutos }} min.</p>
+                                        </label>
                                     </div>
-                                    <p class="text-secondary small m-0">Incluye lavado, asesoría de imagen y peinado con cera mate.</p>
-                                </label>
-                            </div>
-
-                            <!-- Servicio 2 -->
-                            <div class="col-md-6">
-                                <input type="checkbox" class="btn-check service-check" id="service2" name="servicios" value="barba" autocomplete="off">
-                                <label class="card glass-card glass-card-hover service-label p-3 h-100 rounded-3 text-white border" for="service2">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <span class="fw-bold fs-5">Perfilado de Barba</span>
-                                        <span class="text-warning fw-bold fs-5">$18.000</span>
-                                    </div>
-                                    <p class="text-secondary small m-0">Ritual con toalla caliente, aceite hidratante y navaja clásica.</p>
-                                </label>
-                            </div>
-
-                            <!-- Servicio 3 -->
-                            <div class="col-md-6">
-                                <input type="checkbox" class="btn-check service-check" id="service3" name="servicios" value="combo" autocomplete="off">
-                                <label class="card glass-card glass-card-hover service-label p-3 h-100 rounded-3 text-white border" for="service3">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <span class="fw-bold fs-5">Combo VIP (Corte + Barba)</span>
-                                        <span class="text-warning fw-bold fs-5">$38.000</span>
-                                    </div>
-                                    <p class="text-secondary small m-0">Experiencia completa con mascarilla negra y bebida de cortesía.</p>
-                                </label>
-                            </div>
-
-                            <!-- Servicio 4 -->
-                            <div class="col-md-6">
-                                <input type="checkbox" class="btn-check service-check" id="service4" name="servicios" value="pigmentacion" autocomplete="off">
-                                <label class="card glass-card glass-card-hover service-label p-3 h-100 rounded-3 text-white border" for="service4">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <span class="fw-bold fs-5">Pigmentación / Tinte</span>
-                                        <span class="text-warning fw-bold fs-5">$22.000</span>
-                                    </div>
-                                    <p class="text-secondary small m-0">Definición extrema para cerquillos y corrección de imperfecciones.</p>
-                                </label>
-                            </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="col-12 text-center py-4">
+                                    <p class="text-secondary mb-0">⚠️ Esta barbería aún no ha configurado sus servicios o cortes.</p>
+                                </div>
+                            {% endif %}
                         </div>
                     </div>
 
@@ -196,7 +180,7 @@
 
                         <div class="row g-4">
                             <div class="col-md-5">
-                                <label class="form-label text-secondary small fw-bold">FECHA DE CITAS</label>
+                                <label class="form-label text-secondary small fw-bold">FECHA DE CITA</label>
                                 <input type="date" class="form-control form-control-dark" name="fecha" required>
                             </div>
 
@@ -209,16 +193,16 @@
                                     <input type="radio" class="btn-check" name="hora" id="t2" value="10:30">
                                     <label class="btn btn-outline-secondary time-slot text-white border-secondary rounded-pill px-3" for="t2">10:30 AM</label>
 
-                                    <input type="radio" class="btn-check" name="hora" id="t3" value="02:00">
+                                    <input type="radio" class="btn-check" name="hora" id="t3" value="14:00">
                                     <label class="btn btn-outline-secondary time-slot text-white border-secondary rounded-pill px-3" for="t3">02:00 PM</label>
 
-                                    <input type="radio" class="btn-check" name="hora" id="t4" value="03:30">
+                                    <input type="radio" class="btn-check" name="hora" id="t4" value="15:30">
                                     <label class="btn btn-outline-secondary time-slot text-white border-secondary rounded-pill px-3" for="t4">03:30 PM</label>
 
-                                    <input type="radio" class="btn-check" name="hora" id="t5" value="05:00">
+                                    <input type="radio" class="btn-check" name="hora" id="t5" value="17:00">
                                     <label class="btn btn-outline-secondary time-slot text-white border-secondary rounded-pill px-3" for="t5">05:00 PM</label>
 
-                                    <input type="radio" class="btn-check" name="hora" id="t6" value="06:30">
+                                    <input type="radio" class="btn-check" name="hora" id="t6" value="18:30">
                                     <label class="btn btn-outline-secondary time-slot text-white border-secondary rounded-pill px-3" for="t6">06:30 PM</label>
                                 </div>
                             </div>
@@ -241,27 +225,33 @@
                             <input type="tel" class="form-control form-control-dark" placeholder="Teléfono / WhatsApp" name="telefono" required>
                         </div>
 
-                        <!-- DETALLE DE PRECIOS -->
+                        <!-- DETALLE DE UBICACIÓN -->
                         <ul class="list-unstyled text-secondary small mb-4">
                             <li class="d-flex justify-content-between mb-2">
-                                <span>Plataforma de Reserva</span>
-                                <span class="text-success fw-bold">GRATIS</span>
+                                <span>Establecimiento</span>
+                                <span class="text-warning fw-bold">
+                                    {% if barberia_seleccionada %}{{ barberia_seleccionada.nombre }}{% else %}No seleccionado{% endif %}
+                                </span>
                             </li>
                             <li class="d-flex justify-content-between mb-2">
                                 <span>Ubicación</span>
                                 <span class="text-white">Itagüí, Antioquia</span>
+                            </li>
+                            <li class="d-flex justify-content-between mb-2">
+                                <span>Reserva</span>
+                                <span class="text-success fw-bold">SIN COSTO EXTRA</span>
                             </li>
                         </ul>
 
                         <hr class="border-secondary opacity-50 my-4">
 
                         <!-- BOTÓN CONFIRMAR -->
-                        <button type="submit" class="btn btn-warning btn-lg fw-bold w-100 py-3 rounded-pill text-dark shadow btn-hover-scale">
+                        <button type="submit" class="btn btn-warning btn-lg fw-bold w-100 py-3 rounded-pill text-dark shadow">
                             ✅ Confirmar y Agendar
                         </button>
 
                         <p class="text-center text-secondary small mt-3 m-0">
-                            🔒 Pago en el establecimiento al finalizar tu corte.
+                            🔒 Pago directamente en la barbería al finalizar tu atención.
                         </p>
                     </div>
                 </div>

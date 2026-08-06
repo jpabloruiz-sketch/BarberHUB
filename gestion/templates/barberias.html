@@ -168,7 +168,7 @@
 
             <!-- Grid de Barberías (Escala a 4 columnas en pantallas grandes col-xl-3) -->
             <div class="row g-4">
-
+                {% for b in barberias %}
                 <!-- Barbería 1 -->
                 <div class="col-md-6 col-lg-4 col-xl-3 scroll-animate">
                     <div class="card bg-dark text-white h-100 rounded-4 shadow-lg hover-card">
@@ -178,332 +178,23 @@
                         </div>
                         <div class="card-body d-flex flex-column justify-content-between p-4">
                             <div>
-                                <span class="badge bg-secondary bg-opacity-25 text-light fw-normal mb-2">Barrio Santa María</span>
-                                <h3 class="h4 card-title fw-bold text-white mb-2">Viveros Barber Studio</h3>
-                                <p class="text-secondary small mb-4">Asesoría de imagen masculina, perfilado clásico con toalla caliente y degradados de alta precisión.</p>
+                                <span class="badge bg-secondary bg-opacity-25 text-light fw-normal mb-2">{{b.nombre}}</span>
+                                <h3 class="h4 card-title fw-bold text-white mb-2">{{b.dueno}}</h3>
+                                <p class="text-secondary small mb-4">{{b.descripcion}}</p>
                             </div>
                             <div>
                                 <hr class="border-secondary border-opacity-25 my-3">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <span class="small text-secondary">Lun - Sáb: 9am - 8pm</span>
-                                    <a href="{% url 'agendar' %}?barberia=viveros" class="btn btn-warning btn-sm fw-bold px-3 rounded-pill text-dark shadow-sm">📅 Reservar</a>
+                                    <a href="{% url 'agendar' %}?barberia_id={{ b.id }}" class="btn btn-warning btn-sm fw-bold px-3 rounded-pill text-dark shadow-sm">
+                                    📅 Reservar
+                                    </a>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <!-- Barbería 2 -->
-                <div class="col-md-6 col-lg-4 col-xl-3 scroll-animate">
-                    <div class="card bg-dark text-white h-100 rounded-4 shadow-lg hover-card">
-                        <div class="img-wrapper">
-                            <div class="rating-badge badge text-warning px-2 py-1 fs-6">★ 4.8</div>
-                            <img src="https://images.unsplash.com/photo-1599351431202-1e0f0137899a?q=80&w=800&auto=format&fit=crop" class="card-img-top card-img-custom" alt="El Estilo">
-                        </div>
-                        <div class="card-body d-flex flex-column justify-content-between p-4">
-                            <div>
-                                <span class="badge bg-secondary bg-opacity-25 text-light fw-normal mb-2">Centro de Itagüí</span>
-                                <h3 class="h4 card-title fw-bold text-white mb-2">Barbería El Estilo</h3>
-                                <p class="text-secondary small mb-4">Cortes modernos de tendencia urbana, diseños con navaja, pigmentación y tinturas para un look único.</p>
-                            </div>
-                            <div>
-                                <hr class="border-secondary border-opacity-25 my-3">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="small text-secondary">Mar - Dom: 10am - 9pm</span>
-                                    <a href="{% url 'agendar' %}?barberia=el-estilo" class="btn btn-warning btn-sm fw-bold px-3 rounded-pill text-dark shadow-sm">📅 Reservar</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Barbería 3 -->
-                <div class="col-md-6 col-lg-4 col-xl-3 scroll-animate">
-                    <div class="card bg-dark text-white h-100 rounded-4 shadow-lg hover-card">
-                        <div class="img-wrapper">
-                            <div class="rating-badge badge text-warning px-2 py-1 fs-6">★ 4.7</div>
-                            <img src="https://images.unsplash.com/photo-1512690459411-b9245aed614b?q=80&w=800&auto=format&fit=crop" class="card-img-top card-img-custom" alt="Urban Cuts">
-                        </div>
-                        <div class="card-body d-flex flex-column justify-content-between p-4">
-                            <div>
-                                <span class="badge bg-secondary bg-opacity-25 text-light fw-normal mb-2">Sector Ditaires</span>
-                                <h3 class="h4 card-title fw-bold text-white mb-2">Urban Cuts</h3>
-                                <p class="text-secondary small mb-4">Atención personalizada con mascarilla facial, exfoliación y corte de cabello para adultos y niños.</p>
-                            </div>
-                            <div>
-                                <hr class="border-secondary border-opacity-25 my-3">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="small text-secondary">Lun - Sáb: 8am - 7pm</span>
-                                    <a href="{% url 'agendar' %}?barberia=urban-cuts" class="btn btn-warning btn-sm fw-bold px-3 rounded-pill text-dark shadow-sm">📅 Reservar</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Barbería 4 -->
-                <div class="col-md-6 col-lg-4 col-xl-3 scroll-animate">
-                    <div class="card bg-dark text-white h-100 rounded-4 shadow-lg hover-card">
-                        <div class="img-wrapper">
-                            <div class="rating-badge badge text-warning px-2 py-1 fs-6">★ 5.0</div>
-                            <img src="https://images.unsplash.com/photo-1622286342621-4bd786c2447c?q=80&w=800&auto=format&fit=crop" class="card-img-top card-img-custom" alt="La Logia">
-                        </div>
-                        <div class="card-body d-flex flex-column justify-content-between p-4">
-                            <div>
-                                <span class="badge bg-secondary bg-opacity-25 text-light fw-normal mb-2">San Fernando</span>
-                                <h3 class="h4 card-title fw-bold text-white mb-2">La Logia Barber Shop</h3>
-                                <p class="text-secondary small mb-4">Ambiente clásico tradicional. Especialistas en cortes ejecutivos y ritual de afeitado con navaja.</p>
-                            </div>
-                            <div>
-                                <hr class="border-secondary border-opacity-25 my-3">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="small text-secondary">Lun - Sáb: 9am - 8pm</span>
-                                    <a href="{% url 'agendar' %}?barberia=la-logia" class="btn btn-warning btn-sm fw-bold px-3 rounded-pill text-dark shadow-sm">📅 Reservar</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Barbería 5 -->
-                <div class="col-md-6 col-lg-4 col-xl-3 scroll-animate">
-                    <div class="card bg-dark text-white h-100 rounded-4 shadow-lg hover-card">
-                        <div class="img-wrapper">
-                            <div class="rating-badge badge text-warning px-2 py-1 fs-6">★ 4.6</div>
-                            <img src="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?q=80&w=800&auto=format&fit=crop" class="card-img-top card-img-custom" alt="Kingsman">
-                        </div>
-                        <div class="card-body d-flex flex-column justify-content-between p-4">
-                            <div>
-                                <span class="badge bg-secondary bg-opacity-25 text-light fw-normal mb-2">Simón Bolívar</span>
-                                <h3 class="h4 card-title fw-bold text-white mb-2">Kingsman Club</h3>
-                                <p class="text-secondary small mb-4">Un club exclusivo. Disfruta de una bebida de cortesía mientras nuestros expertos cuidan de tu barba y cabello.</p>
-                            </div>
-                            <div>
-                                <hr class="border-secondary border-opacity-25 my-3">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="small text-secondary">Mar - Dom: 11am - 8pm</span>
-                                    <a href="{% url 'agendar' %}?barberia=kingsman" class="btn btn-warning btn-sm fw-bold px-3 rounded-pill text-dark shadow-sm">📅 Reservar</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Barbería 6 -->
-                <div class="col-md-6 col-lg-4 col-xl-3 scroll-animate">
-                    <div class="card bg-dark text-white h-100 rounded-4 shadow-lg hover-card">
-                        <div class="img-wrapper">
-                            <div class="rating-badge badge text-warning px-2 py-1 fs-6">★ 4.9</div>
-                            <img src="https://images.unsplash.com/photo-1532710093739-9470acff878f?q=80&w=800&auto=format&fit=crop" class="card-img-top card-img-custom" alt="Classic Fade">
-                        </div>
-                        <div class="card-body d-flex flex-column justify-content-between p-4">
-                            <div>
-                                <span class="badge bg-secondary bg-opacity-25 text-light fw-normal mb-2">El Rosario</span>
-                                <h3 class="h4 card-title fw-bold text-white mb-2">Classic Fade</h3>
-                                <p class="text-secondary small mb-4">Los verdaderos expertos en degradados (fades) y texturizados, logrando transiciones perfectas.</p>
-                            </div>
-                            <div>
-                                <hr class="border-secondary border-opacity-25 my-3">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="small text-secondary">Lun - Sáb: 8am - 7pm</span>
-                                    <a href="{% url 'agendar' %}?barberia=classic-fade" class="btn btn-warning btn-sm fw-bold px-3 rounded-pill text-dark shadow-sm">📅 Reservar</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Barbería 7 -->
-                <div class="col-md-6 col-lg-4 col-xl-3 scroll-animate">
-                    <div class="card bg-dark text-white h-100 rounded-4 shadow-lg hover-card">
-                        <div class="img-wrapper">
-                            <div class="rating-badge badge text-warning px-2 py-1 fs-6">★ 4.5</div>
-                            <img src="https://images.fresha.com/locations/location-profile-images/2838015/5964012/b518ed58-ac12-4f9a-80d2-0dabea39b4d7-PangeaHairStudio-MX-SanLuisPotos-SanLuisPotos-LasHaciendas-Fresha.jpg" class="card-img-top card-img-custom" alt="Gentlemen">
-                        </div>
-                        <div class="card-body d-flex flex-column justify-content-between p-4">
-                            <div>
-                                <span class="badge bg-secondary bg-opacity-25 text-light fw-normal mb-2">Yarumito</span>
-                                <h3 class="h4 card-title fw-bold text-white mb-2">The Gentlemen's</h3>
-                                <p class="text-secondary small mb-4">Cortes clásicos, arreglos rápidos y limpios para el hombre de negocios que no tiene tiempo que perder.</p>
-                            </div>
-                            <div>
-                                <hr class="border-secondary border-opacity-25 my-3">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="small text-secondary">Lun - Vie: 7am - 6pm</span>
-                                    <a href="{% url 'agendar' %}?barberia=gentlemens" class="btn btn-warning btn-sm fw-bold px-3 rounded-pill text-dark shadow-sm">📅 Reservar</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Barbería 8 -->
-                <div class="col-md-6 col-lg-4 col-xl-3 scroll-animate">
-                    <div class="card bg-dark text-white h-100 rounded-4 shadow-lg hover-card">
-                        <div class="img-wrapper">
-                            <div class="rating-badge badge text-warning px-2 py-1 fs-6">★ 4.8</div>
-                            <img src="https://images.unsplash.com/photo-1621605815971-fbc98d665033?q=80&w=800&auto=format&fit=crop" class="card-img-top card-img-custom" alt="Vintage Shave">
-                        </div>
-                        <div class="card-body d-flex flex-column justify-content-between p-4">
-                            <div>
-                                <span class="badge bg-secondary bg-opacity-25 text-light fw-normal mb-2">Los Naranjos</span>
-                                <h3 class="h4 card-title fw-bold text-white mb-2">Vintage Shave</h3>
-                                <p class="text-secondary small mb-4">Revive la época dorada de las barberías. Sillones vintage y un ambiente relajado con la mejor música.</p>
-                            </div>
-                            <div>
-                                <hr class="border-secondary border-opacity-25 my-3">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="small text-secondary">Mie - Dom: 10am - 8pm</span>
-                                    <a href="{% url 'agendar' %}?barberia=vintage-shave" class="btn btn-warning btn-sm fw-bold px-3 rounded-pill text-dark shadow-sm">📅 Reservar</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Barbería 9 -->
-                <div class="col-md-6 col-lg-4 col-xl-3 scroll-animate">
-                    <div class="card bg-dark text-white h-100 rounded-4 shadow-lg hover-card">
-                        <div class="img-wrapper">
-                            <div class="rating-badge badge text-warning px-2 py-1 fs-6">★ 4.7</div>
-                            <img src="https://thumbs.dreamstime.com/b/moderna-y-elegante-decoraci%C3%B3n-de-barber%C3%ADa-con-un-dise%C3%B1o-minimalista-limpio-sillas-espejos-cromados-elegantes-cromo-grandes-la-398944355.jpg" class="card-img-top card-img-custom" alt="Royal Barbers">
-                        </div>
-                        <div class="card-body d-flex flex-column justify-content-between p-4">
-                            <div>
-                                <span class="badge bg-secondary bg-opacity-25 text-light fw-normal mb-2">San José</span>
-                                <h3 class="h4 card-title fw-bold text-white mb-2">Royal Barbers</h3>
-                                <p class="text-secondary small mb-4">Trato de reyes. Spa capilar, limpieza facial profunda, mascarilla negra y cortes de última moda.</p>
-                            </div>
-                            <div>
-                                <hr class="border-secondary border-opacity-25 my-3">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="small text-secondary">Lun - Sáb: 9am - 8pm</span>
-                                    <a href="{% url 'agendar' %}?barberia=royal-barbers" class="btn btn-warning btn-sm fw-bold px-3 rounded-pill text-dark shadow-sm">📅 Reservar</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Barbería 10 -->
-                <div class="col-md-6 col-lg-4 col-xl-3 scroll-animate">
-                    <div class="card bg-dark text-white h-100 rounded-4 shadow-lg hover-card">
-                        <div class="img-wrapper">
-                            <div class="rating-badge badge text-warning px-2 py-1 fs-6">★ 4.9</div>
-                            <img src="https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?q=80&w=800&auto=format&fit=crop" class="card-img-top card-img-custom" alt="Elite Grooming">
-                        </div>
-                        <div class="card-body d-flex flex-column justify-content-between p-4">
-                            <div>
-                                <span class="badge bg-secondary bg-opacity-25 text-light fw-normal mb-2">Las Asturias</span>
-                                <h3 class="h4 card-title fw-bold text-white mb-2">Elite Grooming</h3>
-                                <p class="text-secondary small mb-4">Barberos galardonados, productos de alta gama y técnicas europeas para tu cuidado personal.</p>
-                            </div>
-                            <div>
-                                <hr class="border-secondary border-opacity-25 my-3">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="small text-secondary">Lun - Sáb: 10am - 9pm</span>
-                                    <a href="{% url 'agendar' %}?barberia=elite-grooming" class="btn btn-warning btn-sm fw-bold px-3 rounded-pill text-dark shadow-sm">📅 Reservar</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Barbería 11 -->
-                <div class="col-md-6 col-lg-4 col-xl-3 scroll-animate">
-                    <div class="card bg-dark text-white h-100 rounded-4 shadow-lg hover-card">
-                        <div class="img-wrapper">
-                            <div class="rating-badge badge text-warning px-2 py-1 fs-6">★ 4.6</div>
-                            <img src="https://blog.buk.es/content/images/2024/07/barber-modern.jpg" class="card-img-top card-img-custom" alt="Cuchilla Navaja">
-                        </div>
-                        <div class="card-body d-flex flex-column justify-content-between p-4">
-                            <div>
-                                <span class="badge bg-secondary bg-opacity-25 text-light fw-normal mb-2">Calatrava</span>
-                                <h3 class="h4 card-title fw-bold text-white mb-2">Cuchilla & Navaja</h3>
-                                <p class="text-secondary small mb-4">Lo mejor del old school. Especializados en cejas, líneas marcadas, y afeitado completo al ras.</p>
-                            </div>
-                            <div>
-                                <hr class="border-secondary border-opacity-25 my-3">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="small text-secondary">Jue - Mar: 9am - 8pm</span>
-                                    <a href="{% url 'agendar' %}?barberia=cuchilla-navaja" class="btn btn-warning btn-sm fw-bold px-3 rounded-pill text-dark shadow-sm">📅 Reservar</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Barbería 12 -->
-                <div class="col-md-6 col-lg-4 col-xl-3 scroll-animate">
-                    <div class="card bg-dark text-white h-100 rounded-4 shadow-lg hover-card">
-                        <div class="img-wrapper">
-                            <div class="rating-badge badge text-warning px-2 py-1 fs-6">★ 4.8</div>
-                            <img src="https://images.unsplash.com/photo-1600948836101-f9ffda59d250?q=80&w=800&auto=format&fit=crop" class="card-img-top card-img-custom" alt="Master Cut">
-                        </div>
-                        <div class="card-body d-flex flex-column justify-content-between p-4">
-                            <div>
-                                <span class="badge bg-secondary bg-opacity-25 text-light fw-normal mb-2">Bariloche</span>
-                                <h3 class="h4 card-title fw-bold text-white mb-2">Master Cut</h3>
-                                <p class="text-secondary small mb-4">Donde el estilo libre toma vida. Trae el diseño que quieras y nuestros barberos lo harán realidad en tu cabello.</p>
-                            </div>
-                            <div>
-                                <hr class="border-secondary border-opacity-25 my-3">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="small text-secondary">Lun - Dom: 8am - 6pm</span>
-                                    <a href="{% url 'agendar' %}?barberia=master-cut" class="btn btn-warning btn-sm fw-bold px-3 rounded-pill text-dark shadow-sm">📅 Reservar</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Barbería 13 -->
-                <div class="col-md-6 col-lg-4 col-xl-3 scroll-animate">
-                    <div class="card bg-dark text-white h-100 rounded-4 shadow-lg hover-card">
-                        <div class="img-wrapper">
-                            <div class="rating-badge badge text-warning px-2 py-1 fs-6">★ 4.9</div>
-                            <img src="https://us.123rf.com/450wm/mickloggi/mickloggi2304/mickloggi230402264/202708126-interior-of-modern-barber-shop-stylish-barbershop-interior.jpg?ver=6" class="card-img-top card-img-custom" alt="Black Label">
-                        </div>
-                        <div class="card-body d-flex flex-column justify-content-between p-4">
-                            <div>
-                                <span class="badge bg-secondary bg-opacity-25 text-light fw-normal mb-2">Pilsen</span>
-                                <h3 class="h4 card-title fw-bold text-white mb-2">Black Label Barber</h3>
-                                <p class="text-secondary small mb-4">Experiencia VIP completa. Lavado relajante, masaje capilar, corte premium y sellado con cera.</p>
-                            </div>
-                            <div>
-                                <hr class="border-secondary border-opacity-25 my-3">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="small text-secondary">Lun - Sáb: 10am - 9pm</span>
-                                    <a href="{% url 'agendar' %}?barberia=black-label" class="btn btn-warning btn-sm fw-bold px-3 rounded-pill text-dark shadow-sm">📅 Reservar</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Barbería 14 -->
-                <div class="col-md-6 col-lg-4 col-xl-3 scroll-animate">
-                    <div class="card bg-dark text-white h-100 rounded-4 shadow-lg hover-card">
-                        <div class="img-wrapper">
-                            <div class="rating-badge badge text-warning px-2 py-1 fs-6">★ 4.7</div>
-                            <img src="https://images.unsplash.com/photo-1587595431973-160d0d94add1?q=80&w=800&auto=format&fit=crop" class="card-img-top card-img-custom" alt="Imperio Barber">
-                        </div>
-                        <div class="card-body d-flex flex-column justify-content-between p-4">
-                            <div>
-                                <span class="badge bg-secondary bg-opacity-25 text-light fw-normal mb-2">Santa Cruz</span>
-                                <h3 class="h4 card-title fw-bold text-white mb-2">Imperio Barbería</h3>
-                                <p class="text-secondary small mb-4">Espacio para padres e hijos. Cortes modernos, cerquillo impecable y atención rápida para agendas ocupadas.</p>
-                            </div>
-                            <div>
-                                <hr class="border-secondary border-opacity-25 my-3">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="small text-secondary">Mar - Sáb: 9am - 8pm</span>
-                                    <a href="{% url 'agendar' %}?barberia=imperio" class="btn btn-warning btn-sm fw-bold px-3 rounded-pill text-dark shadow-sm">📅 Reservar</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                {% endfor %}
 
                 <!-- Tarjeta 15: Registro de Negocios -->
                 <div class="col-md-6 col-lg-4 col-xl-3 scroll-animate">
@@ -514,9 +205,9 @@
                             <p class="text-secondary small mb-4">
                                 Únete a BarberHUB en Itagüí y gestiona la agenda de tu negocio de forma 100% automatizada.
                             </p>
-                            <a href="#" class="btn btn-outline-warning btn-sm fw-bold px-4 py-2 rounded-pill text-uppercase" style="letter-spacing: 1px;">
-                                Registrar Mi Negocio
-                            </a>
+                             <a href="{% url 'panel_barbero' %}" class="btn btn-outline-warning fw-bold py-3 w-100 mt-3 btn-hover-scale rounded-pill">
+                            Registrar mi negocio
+                        </a>
                         </div>
                     </div>
                 </div>

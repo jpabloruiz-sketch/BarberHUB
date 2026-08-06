@@ -1,0 +1,273 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    /* FONDO Y CONTENEDOR PRINCIPAL */
+    .payment-wrapper {
+        background-color: #0d1117; /* Fondo oscuro acorde a la imagen */
+        min-height: 100vh;
+        padding-bottom: 50px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    /* TARJETAS OSCURAS (Paneles) */
+    .bg-dark-panel {
+        background-color: #161b22;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    /* CÍRCULOS DE PASOS */
+    .step-circle {
+        width: 35px;
+        height: 35px;
+        background-color: #ffc107;
+        color: #000;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 1.1rem;
+        margin-right: 15px;
+        flex-shrink: 0;
+    }
+
+    /* INPUTS OSCUROS */
+    .form-control-dark, .form-select-dark {
+        background-color: #0d1117;
+        border: 1px solid #30363d;
+        color: #e6edf3;
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control-dark:focus, .form-select-dark:focus {
+        background-color: #0d1117;
+        border-color: #ffc107;
+        color: #fff;
+        box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.25);
+        outline: none;
+    }
+
+    .form-control-dark::placeholder {
+        color: #8b949e;
+    }
+
+    /* LABELS */
+    .form-label-custom {
+        color: #8b949e;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    /* RESUMEN DE COMPRA */
+    .summary-divider {
+        border-top: 1px solid #30363d;
+        margin: 1.5rem 0;
+    }
+
+    /* BOTÓN DE PAGO */
+    .btn-pay {
+        background-color: #ffc107;
+        color: #000;
+        font-weight: bold;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .btn-pay:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 15px rgba(255, 193, 7, 0.3);
+        background-color: #ffca2c;
+    }
+</style>
+
+<div class="payment-wrapper pt-5">
+    <!-- ENCABEZADO DE LA PÁGINA -->
+    <div class="container text-center text-white mb-5 animate-down">
+        <span class="badge bg-warning text-dark fw-bold px-3 py-2 text-uppercase mb-3 rounded-pill" style="letter-spacing: 1px;">
+            Suscripción Online • Itagüí
+        </span>
+        <h1 class="display-4 fw-bold mb-2">Adquiere tu <span class="text-warning">Plan</span></h1>
+        <p class="text-secondary fs-5">Completa los datos para activar tu cuenta de barbero y gestionar tus citas.</p>
+    </div>
+
+    <div class="container">
+        <form method="POST" action="#">
+            {% csrf_token %}
+            <div class="row g-4">
+                
+                <!-- ================= COLUMNA IZQUIERDA (Formularios) ================= -->
+                <div class="col-lg-8">
+                    
+                    <!-- PASO 1: SELECCIÓN DE PLAN -->
+                    <div class="bg-dark-panel p-4 mb-4">
+                        <div class="d-flex align-items-center mb-4">
+                            <div class="step-circle">1</div>
+                            <h3 class="text-white m-0 fw-bold fs-4">Selección de Plan</h3>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-12">
+                                <label class="form-label-custom">Plan a Contratar</label>
+                                <select class="form-select form-select-dark w-100" id="planSelect" name="plan" required>
+                                    <option value="80000" selected>Plan Individual - $80.000 COP / mes (1 Barbero)</option>
+                                    <option value="150000">Plan Studio - $150.000 COP / mes (2-4 Barberos)</option>
+                                    <option value="200000">Plan Élite - $200.000 COP / mes (+5 Barberos)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PASO 2: DATOS DE FACTURACIÓN -->
+                    <div class="bg-dark-panel p-4 mb-4">
+                        <div class="d-flex align-items-center mb-4">
+                            <div class="step-circle">2</div>
+                            <h3 class="text-white m-0 fw-bold fs-4">Datos de Facturación</h3>
+                        </div>
+                        
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label-custom">Nombre Completo / Razón Social</label>
+                                <input type="text" class="form-control form-control-dark" placeholder="Ej. Juan Pérez" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label-custom">Documento / NIT</label>
+                                <input type="text" class="form-control form-control-dark" placeholder="Ej. 1000000000" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label-custom">Correo Electrónico</label>
+                                <input type="email" class="form-control form-control-dark" placeholder="correo@ejemplo.com" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label-custom">Teléfono / WhatsApp</label>
+                                <input type="text" class="form-control form-control-dark" placeholder="Ej. 300 000 0000" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PASO 3: MÉTODO DE PAGO -->
+                    <div class="bg-dark-panel p-4 mb-4 mb-lg-0">
+                        <div class="d-flex align-items-center mb-4">
+                            <div class="step-circle">3</div>
+                            <h3 class="text-white m-0 fw-bold fs-4">Detalles de Pago</h3>
+                        </div>
+                        
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label-custom">Número de Tarjeta</label>
+                                <div class="position-relative">
+                                    <input type="text" class="form-control form-control-dark pe-5" placeholder="0000 0000 0000 0000" maxlength="19" required>
+                                    <i class="bi bi-credit-card position-absolute top-50 end-0 translate-middle-y me-3 text-secondary"></i>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label-custom">Fecha de Expiración</label>
+                                <input type="text" class="form-control form-control-dark" placeholder="MM/AA" maxlength="5" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label-custom">Código de Seguridad (CVV)</label>
+                                <input type="password" class="form-control form-control-dark" placeholder="123" maxlength="4" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label-custom">Nombre en la Tarjeta</label>
+                                <input type="text" class="form-control form-control-dark" placeholder="Como aparece en la tarjeta" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ================= COLUMNA DERECHA (Resumen) ================= -->
+                <div class="col-lg-4">
+                    <div class="bg-dark-panel p-4 sticky-top" style="top: 2rem;">
+                        <div class="d-flex align-items-center mb-4">
+                            <h4 class="text-white m-0 fw-bold fs-5">📋 Resumen de Compra</h4>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-secondary">Plan seleccionado:</span>
+                            <span class="text-white fw-bold text-end" id="planNameDisplay">Plan Individual</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-secondary">Ciclo de facturación:</span>
+                            <span class="text-white">Mensual</span>
+                        </div>
+                        
+                        <div class="summary-divider"></div>
+                        
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-secondary">Subtotal:</span>
+                            <span class="text-white fw-bold" id="subtotalDisplay">$ 80.000</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-secondary">Impuestos (IVA 19%):</span>
+                            <span class="text-white" id="taxDisplay">$ 15.200</span>
+                        </div>
+                        
+                        <div class="summary-divider"></div>
+                        
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <span class="text-white fs-5 fw-bold">Total a Pagar:</span>
+                            <span class="text-warning fs-3 fw-extrabold" id="totalDisplay">$ 95.200</span>
+                        </div>
+
+                        <button type="submit" class="btn btn-pay w-100 py-3 rounded-3 d-flex justify-content-center align-items-center gap-2 fs-5">
+                            <i class="bi bi-lock-fill"></i> Procesar Pago
+                        </button>
+                        
+                        <div class="text-center mt-3">
+                            <small class="text-secondary"><i class="bi bi-shield-check text-success"></i> Pago 100% seguro y encriptado.</small>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- SCRIPT PARA ACTUALIZAR EL PRECIO DINÁMICAMENTE -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const planSelect = document.getElementById('planSelect');
+        const planNameDisplay = document.getElementById('planNameDisplay');
+        const subtotalDisplay = document.getElementById('subtotalDisplay');
+        const taxDisplay = document.getElementById('taxDisplay');
+        const totalDisplay = document.getElementById('totalDisplay');
+
+        // Formateador estándar de moneda para Colombia (sin decimales)
+        const copFormatter = new Intl.NumberFormat('es-CO', {
+            style: 'currency',
+            currency: 'COP',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        });
+
+        function updatePrices() {
+            // Obtener precio en número y nombre del select
+            const price = parseFloat(planSelect.value);
+            const planText = planSelect.options[planSelect.selectedIndex].text.split(' - ')[0];
+
+            // Calcular impuestos (19%) y total
+            const tax = Math.round(price * 0.19);
+            const total = price + tax;
+
+            // Actualizar la interfaz
+            planNameDisplay.textContent = planText;
+            subtotalDisplay.textContent = copFormatter.format(price);
+            taxDisplay.textContent = copFormatter.format(tax);
+            totalDisplay.textContent = copFormatter.format(total);
+        }
+
+        // Escuchar cambios en el select
+        planSelect.addEventListener('change', updatePrices);
+
+        // Inicializar al cargar la página
+        updatePrices();
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,452 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .full-width-wrapper {
+        width: 100vw;
+        position: relative;
+        left: 50%;
+        right: 50%;
+        margin-left: -50vw;
+        margin-right: -50vw;
+        overflow-x: hidden;
+        background-color: #0b0d10;
+        min-height: 90vh;
+    }
+    .glass-card {
+        background: rgba(22, 27, 34, 0.85) !important;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    }
+    .form-control-dark, .form-select-dark {
+        background-color: #161b22 !important;
+        border: 1px solid rgba(255, 255, 255, 0.15) !important;
+        color: #ffffff !important;
+        padding: 0.75rem 1rem;
+        border-radius: 10px;
+    }
+    .form-control-dark:focus, .form-select-dark:focus {
+        border-color: #ffc107 !important;
+        box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.25) !important;
+    }
+    .form-control-dark::placeholder {
+        color: #8b949e !important;
+        opacity: 1 !important;
+    }
+    .service-item, .schedule-item {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 10px;
+        transition: all 0.2s ease;
+    }
+    .service-item:hover, .schedule-item:hover {
+        background: rgba(255, 255, 255, 0.06);
+        border-color: rgba(255, 193, 7, 0.3);
+    }
+</style>
+
+<div class="full-width-wrapper py-5 px-3 px-md-5">
+    <div class="container-fluid px-lg-5">
+        
+        <!-- ENCABEZADO --> 
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-5 border-bottom border-secondary pb-4">
+            <div>
+                <span class="badge bg-warning text-dark fw-bold px-3 py-2 text-uppercase mb-2 rounded-pill">
+                    Panel Profesional BarberHUB
+                </span>
+                <h1 class="display-5 fw-extrabold text-white m-0">Gestión de <span class="text-warning">Barbería</span></h1>
+                <p class="text-secondary fs-6 mt-1 m-0">Administra la información de tu establecimiento, servicios y horarios en Itagüí.</p>
+            </div>
+            <div class="mt-3 mt-md-0 text-md-end">
+                <span class="text-light fs-6">Bienvenido, <strong class="text-warning">{{ request.user.username }}</strong></span>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            
+            <!-- COLUMNA IZQUIERDA: DATOS DE LA BARBERÍA -->
+            <div class="col-lg-6">
+                <div class="card glass-card text-white rounded-4 p-4 shadow h-100">
+                    <h3 class="h4 fw-bold mb-4 text-warning d-flex align-items-center gap-2">
+                        <span>💈</span> Información del Establecimiento
+                    </h3>
+                    
+                    <form method="post" action="{% url 'panel_barbero' %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label text-secondary small fw-bold">NOMBRE DE LA BARBERÍA</label>
+                            <input type="text" class="form-control form-control-dark" name="nombre" value="{{ barberia.nombre|default:'' }}" placeholder="Ej: Barbería Studio" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label text-secondary small fw-bold">DIRECCIÓN Y BARRIO (ITAGÜÍ)</label>
+                            <input type="text" class="form-control form-control-dark mb-2" name="direccion" value="{{ barberia.direccion|default:'' }}" placeholder="Ej: Calle 47 # 50-20" required>
+                            <input type="text" class="form-control form-control-dark" name="barrio" value="{{ barberia.barrio|default:'Itagüí' }}" placeholder="Ej: Santa María / Centro">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label text-secondary small fw-bold">ENLACE DE GOOGLE MAPS</label>
+                            <input type="url" class="form-control form-control-dark" name="google_maps_link" value="{{ barberia.google_maps_link|default:'' }}" placeholder="Ej: https://maps.google.com/...">
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label text-secondary small fw-bold">DESCRIPCIÓN DE SERVICIOS</label>
+                            <textarea class="form-control form-control-dark" name="descripcion" rows="4" placeholder="Ej: Especialistas en cortes modernos, perfilado de barba y perfilado con navaja...">{{ barberia.descripcion|default:'' }}</textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-warning fw-bold w-100 py-3 rounded-pill text-dark shadow">
+                            💾 Guardar / Actualizar Barbería
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- COLUMNA DERECHA: SERVICIOS Y HORARIOS -->
+            <div class="col-lg-6">
+                
+                <!-- 1. AÑADIR SERVICIO -->
+                <div class="card glass-card text-white rounded-4 p-4 shadow mb-4">
+                    <h3 class="h4 fw-bold mb-3 text-warning d-flex align-items-center gap-2">
+                        <span>✂️</span> Añadir Servicio
+                    </h3>
+                    <form method="post" action="{% url 'agregar_servicio' %}">
+                        {% csrf_token %}
+                        <div class="row g-2 mb-3">
+                            <div class="col-md-5">
+                                <label class="form-label text-secondary small fw-bold">NOMBRE DEL SERVICIO</label>
+                                <input type="text" class="form-control form-control-dark" name="nombre" placeholder="Ej: Corte Fade" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label text-secondary small fw-bold">PRECIO ($ COP)</label>
+                                <input type="text" class="form-control form-control-dark input-precio" name="precio" placeholder="20.000" value="20.000" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label text-secondary small fw-bold">DURACIÓN</label>
+                                <input type="number" min="5" step="5" value="30" class="form-control form-control-dark" name="duracion" placeholder="Min" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-outline-warning w-100 rounded-pill fw-bold py-2">+ Guardar Servicio</button>
+                    </form>
+
+                    <!-- LISTA DE SERVICIOS GUARDADOS -->
+                    {% if servicios %}
+                        <hr class="border-secondary my-4">
+                        <h5 class="fs-6 text-uppercase text-secondary fw-bold mb-3">Servicios Registrados</h5>
+                        <div class="d-flex flex-column gap-2">
+                            {% for s in servicios %}
+                            <div class="service-item p-3 d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="fw-bold fs-6 text-white d-block">{{ s.nombre }}</span>
+                                    <small class="text-secondary">⏱️ {{ s.duracion_minutos }} min</small>
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="badge bg-warning text-dark fs-6 px-3 py-2 fw-bold precio-badge" data-precio="{{ s.precio }}">
+                                        $ {{ s.precio }} COP
+                                    </span>
+                                    <button type="button" class="btn btn-sm btn-outline-warning rounded-circle px-2 py-1" data-bs-toggle="modal" data-bs-target="#editServicioModal{{ s.id }}" title="Editar Servicio">
+                                        ✏️
+                                    </button>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- 2. CONFIGURAR HORARIOS -->
+                <div class="card glass-card text-white rounded-4 p-4 shadow">
+                    <h3 class="h4 fw-bold mb-3 text-warning d-flex align-items-center gap-2">
+                        <span>⏰</span> Añadir Horario de Atención
+                    </h3>
+                    <form method="post" action="{% url 'agregar_horario' %}">
+                        {% csrf_token %}
+                        <div class="row g-2 mb-3">
+                            <div class="col-12 col-md-4">
+                                <label class="form-label text-secondary small fw-bold">DÍA</label>
+                                <select class="form-select form-select-dark" name="dia" required>
+                                    <option value="LUN">Lunes</option>
+                                    <option value="MAR">Martes</option>
+                                    <option value="MIE">Miércoles</option>
+                                    <option value="JUE">Jueves</option>
+                                    <option value="VIE">Viernes</option>
+                                    <option value="SAB">Sábado</option>
+                                    <option value="DOM">Domingo</option>
+                                </select>
+                            </div>
+
+                            <!-- APERTURA CON SELECTOR AM / PM -->
+                            <div class="col-12 col-md-4">
+                                <label class="form-label text-secondary small fw-bold">HORA APERTURA</label>
+                                <div class="input-group">
+                                    <select class="form-select form-select-dark px-2" name="apertura_hora" required>
+                                        <option value="8" selected>8</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                        <option value="8">8</option>
+                                        <option value="9">9</option>
+                                        <option value="10">10</option>
+                                        <option value="11">11</option>
+                                        <option value="12">12</option>
+                                    </select>
+                                    <select class="form-select form-select-dark px-2" name="apertura_minuto" required>
+                                        <option value="00" selected>:00</option>
+                                        <option value="15">:15</option>
+                                        <option value="30">:30</option>
+                                        <option value="45">:45</option>
+                                    </select>
+                                    <select class="form-select form-select-dark px-2 bg-warning text-dark fw-bold" name="apertura_ampm" required>
+                                        <option value="AM" selected>AM</option>
+                                        <option value="PM">PM</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- CIERRE CON SELECTOR AM / PM -->
+                            <div class="col-12 col-md-4">
+                                <label class="form-label text-secondary small fw-bold">HORA CIERRE</label>
+                                <div class="input-group">
+                                    <select class="form-select form-select-dark px-2" name="cierre_hora" required>
+                                        <option value="8" selected>8</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                        <option value="8">8</option>
+                                        <option value="9">9</option>
+                                        <option value="10">10</option>
+                                        <option value="11">11</option>
+                                        <option value="12">12</option>
+                                    </select>
+                                    <select class="form-select form-select-dark px-2" name="cierre_minuto" required>
+                                        <option value="00" selected>:00</option>
+                                        <option value="15">:15</option>
+                                        <option value="30">:30</option>
+                                        <option value="45">:45</option>
+                                    </select>
+                                    <select class="form-select form-select-dark px-2 bg-warning text-dark fw-bold" name="cierre_ampm" required>
+                                        <option value="AM">AM</option>
+                                        <option value="PM" selected>PM</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-outline-warning w-100 rounded-pill fw-bold py-2">+ Guardar Horario</button>
+                    </form>
+
+                    <!-- LISTA DE HORARIOS GUARDADOS -->
+                    {% if horarios %}
+                        <hr class="border-secondary my-4">
+                        <h5 class="fs-6 text-uppercase text-secondary fw-bold mb-3">Horarios Configurados</h5>
+                        <div class="d-flex flex-column gap-2">
+                            {% for h in horarios %}
+                            <div class="schedule-item p-3 d-flex justify-content-between align-items-center">
+                                <span class="text-white fw-bold">{{ h.get_dia_display }}</span>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="badge bg-dark text-warning border border-warning px-3 py-2 fw-bold">
+                                        {{ h.hora_apertura|time:"g:i" }} {% if h.hora_apertura.hour >= 12 %}PM{% else %}AM{% endif %} - 
+                                        {{ h.hora_cierre|time:"g:i" }} {% if h.hora_cierre.hour >= 12 %}PM{% else %}AM{% endif %}
+                                    </span>
+                                    <button type="button" class="btn btn-sm btn-outline-warning rounded-circle px-2 py-1" data-bs-toggle="modal" data-bs-target="#editHorarioModal{{ h.id }}" title="Editar Horario">
+                                        ✏️
+                                    </button>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+            </div> <!-- FIN COLUMNA DERECHA -->
+        </div> <!-- FIN ROW -->
+
+    </div>
+</div>
+
+<!-- ================================================================= -->
+<!-- MODALES FUERA DEL CONTENEDOR PRINCIPAL                            -->
+<!-- ================================================================= -->
+
+<!-- 1. MODALES PARA EDITAR SERVICIOS -->
+{% for s in servicios %}
+<div class="modal fade" id="editServicioModal{{ s.id }}" tabindex="-1" aria-labelledby="editServicioLabel{{ s.id }}" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content glass-card text-white border-secondary">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title fw-bold text-warning" id="editServicioLabel{{ s.id }}">✏️ Editar Servicio</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" action="{% url 'editar_servicio' s.id %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label text-secondary small fw-bold">NOMBRE DEL SERVICIO</label>
+                        <input type="text" class="form-control form-control-dark" name="nombre" value="{{ s.nombre }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-secondary small fw-bold">PRECIO ($ COP)</label>
+                        <input type="text" class="form-control form-control-dark input-precio" name="precio" value="{{ s.precio }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-secondary small fw-bold">DURACIÓN (MINUTOS)</label>
+                        <input type="number" min="5" step="5" class="form-control form-control-dark" name="duracion" value="{{ s.duracion_minutos }}" required>
+                    </div>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-warning fw-bold rounded-pill text-dark">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<!-- 2. MODALES PARA EDITAR HORARIOS -->
+{% for h in horarios %}
+<div class="modal fade" id="editHorarioModal{{ h.id }}" tabindex="-1" aria-labelledby="editHorarioLabel{{ h.id }}" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content glass-card text-white border-secondary">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title fw-bold text-warning" id="editHorarioLabel{{ h.id }}">✏️ Editar Horario</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" action="{% url 'editar_horario' h.id %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label text-secondary small fw-bold">DÍA DE LA SEMANA</label>
+                        <select class="form-select form-select-dark" name="dia" required>
+                            <option value="LUN" {% if h.dia == 'LUN' %}selected{% endif %}>Lunes</option>
+                            <option value="MAR" {% if h.dia == 'MAR' %}selected{% endif %}>Martes</option>
+                            <option value="MIE" {% if h.dia == 'MIE' %}selected{% endif %}>Miércoles</option>
+                            <option value="JUE" {% if h.dia == 'JUE' %}selected{% endif %}>Jueves</option>
+                            <option value="VIE" {% if h.dia == 'VIE' %}selected{% endif %}>Viernes</option>
+                            <option value="SAB" {% if h.dia == 'SAB' %}selected{% endif %}>Sábado</option>
+                            <option value="DOM" {% if h.dia == 'DOM' %}selected{% endif %}>Domingo</option>
+                        </select>
+                    </div>
+                    
+                    <!-- EDITAR HORA APERTURA -->
+                    <div class="mb-3">
+                        <label class="form-label text-secondary small fw-bold">HORA DE APERTURA</label>
+                        <div class="input-group">
+                            <select class="form-select form-select-dark" name="apertura_hora" required>
+                                {% with h.hora_apertura|time:"g" as h_ap %}
+                                <option value="1" {% if h_ap == '1' %}selected{% endif %}>1</option>
+                                <option value="2" {% if h_ap == '2' %}selected{% endif %}>2</option>
+                                <option value="3" {% if h_ap == '3' %}selected{% endif %}>3</option>
+                                <option value="4" {% if h_ap == '4' %}selected{% endif %}>4</option>
+                                <option value="5" {% if h_ap == '5' %}selected{% endif %}>5</option>
+                                <option value="6" {% if h_ap == '6' %}selected{% endif %}>6</option>
+                                <option value="7" {% if h_ap == '7' %}selected{% endif %}>7</option>
+                                <option value="8" {% if h_ap == '8' %}selected{% endif %}>8</option>
+                                <option value="9" {% if h_ap == '9' %}selected{% endif %}>9</option>
+                                <option value="10" {% if h_ap == '10' %}selected{% endif %}>10</option>
+                                <option value="11" {% if h_ap == '11' %}selected{% endif %}>11</option>
+                                <option value="12" {% if h_ap == '12' %}selected{% endif %}>12</option>
+                                {% endwith %}
+                            </select>
+                            <select class="form-select form-select-dark" name="apertura_minuto" required>
+                                {% with h.hora_apertura|time:"i" as m_ap %}
+                                <option value="00" {% if m_ap == '00' %}selected{% endif %}>:00</option>
+                                <option value="15" {% if m_ap == '15' %}selected{% endif %}>:15</option>
+                                <option value="30" {% if m_ap == '30' %}selected{% endif %}>:30</option>
+                                <option value="45" {% if m_ap == '45' %}selected{% endif %}>:45</option>
+                                {% endwith %}
+                            </select>
+                            <select class="form-select form-select-dark bg-warning text-dark fw-bold" name="apertura_ampm" required>
+                                <option value="AM" {% if h.hora_apertura.hour < 12 %}selected{% endif %}>AM</option>
+                                <option value="PM" {% if h.hora_apertura.hour >= 12 %}selected{% endif %}>PM</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- EDITAR HORA CIERRE -->
+                    <div class="mb-3">
+                        <label class="form-label text-secondary small fw-bold">HORA DE CIERRE</label>
+                        <div class="input-group">
+                            <select class="form-select form-select-dark" name="cierre_hora" required>
+                                {% with h.hora_cierre|time:"g" as h_ci %}
+                                <option value="1" {% if h_ci == '1' %}selected{% endif %}>1</option>
+                                <option value="2" {% if h_ci == '2' %}selected{% endif %}>2</option>
+                                <option value="3" {% if h_ci == '3' %}selected{% endif %}>3</option>
+                                <option value="4" {% if h_ci == '4' %}selected{% endif %}>4</option>
+                                <option value="5" {% if h_ci == '5' %}selected{% endif %}>5</option>
+                                <option value="6" {% if h_ci == '6' %}selected{% endif %}>6</option>
+                                <option value="7" {% if h_ci == '7' %}selected{% endif %}>7</option>
+                                <option value="8" {% if h_ci == '8' %}selected{% endif %}>8</option>
+                                <option value="9" {% if h_ci == '9' %}selected{% endif %}>9</option>
+                                <option value="10" {% if h_ci == '10' %}selected{% endif %}>10</option>
+                                <option value="11" {% if h_ci == '11' %}selected{% endif %}>11</option>
+                                <option value="12" {% if h_ci == '12' %}selected{% endif %}>12</option>
+                                {% endwith %}
+                            </select>
+                            <select class="form-select form-select-dark" name="cierre_minuto" required>
+                                {% with h.hora_cierre|time:"i" as m_ci %}
+                                <option value="00" {% if m_ci == '00' %}selected{% endif %}>:00</option>
+                                <option value="15" {% if m_ci == '15' %}selected{% endif %}>:15</option>
+                                <option value="30" {% if m_ci == '30' %}selected{% endif %}>:30</option>
+                                <option value="45" {% if m_ci == '45' %}selected{% endif %}>:45</option>
+                                {% endwith %}
+                            </select>
+                            <select class="form-select form-select-dark bg-warning text-dark fw-bold" name="cierre_ampm" required>
+                                <option value="AM" {% if h.hora_cierre.hour < 12 %}selected{% endif %}>AM</option>
+                                <option value="PM" {% if h.hora_cierre.hour >= 12 %}selected{% endif %}>PM</option>
+                            </select>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-warning fw-bold rounded-pill text-dark">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<!-- JAVASCRIPT PARA PUNTUACIÓN AUTOMÁTICA DE PRECIOS -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const inputsPrecio = document.querySelectorAll('.input-precio');
+        
+        function formatearNumero(val) {
+            let numero = String(val).replace(/\D/g, '');
+            if (!numero) return '';
+            return parseInt(numero, 10).toLocaleString('es-CO');
+        }
+
+        inputsPrecio.forEach(input => {
+            if (input.value) {
+                input.value = formatearNumero(input.value);
+            }
+            input.addEventListener('input', function() {
+                this.value = formatearNumero(this.value);
+            });
+        });
+
+        const badgesPrecio = document.querySelectorAll('.precio-badge');
+        badgesPrecio.forEach(badge => {
+            let raw = badge.getAttribute('data-precio');
+            if (raw) {
+                let num = parseInt(raw, 10);
+                if (!isNaN(num)) {
+                    badge.textContent = '$ ' + num.toLocaleString('es-CO') + ' COP';
+                }
+            }
+        });
+    });
+</script>
+
+{% endblock %}

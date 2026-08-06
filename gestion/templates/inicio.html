@@ -37,7 +37,6 @@
         min-height: 90vh;
         display: flex;
         align-items: center;
-        /* Fondo multicapa con degradados vivos y brillo radial */
         background: 
             radial-gradient(circle at 50% 30%, rgba(255, 193, 7, 0.15), transparent 60%),
             linear-gradient(to bottom, rgba(11, 13, 16, 0.5), rgba(11, 13, 16, 0.98)), 
@@ -214,6 +213,90 @@
         </div>
     </div>
 
+    <!-- ================= PLANES PARA BARBEROS ================= -->
+    <div class="container-fluid px-4 px-md-5 my-5 pt-4" id="planes">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-5 border-bottom border-secondary pb-3 animate-up delay-1">
+            <div class="mb-3 mb-md-0">
+                <h2 class="display-4 fw-bold m-0 text-white">Planes para <span class="text-warning">Barberos</span></h2>
+                <p class="text-secondary m-0 fs-5 mt-2">Moderniza la gestión de tu negocio. Elige el plan que mejor se adapte a tu equipo.</p>
+            </div>
+            <span class="badge bg-dark border border-warning text-warning fs-5 px-4 py-2 rounded-pill shadow-sm align-self-start align-self-md-auto">
+                💼 Suscripciones Mensuales
+            </span>
+        </div>
+        
+        <div class="row g-4 text-center">
+            <!-- Plan 1: Individual -->
+            <div class="col-md-4 animate-up delay-1">
+                <div class="card glass-card text-white h-100 shadow-lg overflow-hidden rounded-4">
+                    <img src="https://www.carloscondepeluqueros.com/wp-content/uploads/2019/01/cabecera-barbero-profesional.jpg" class="card-img-top card-img-custom" style="height: 200px;" alt="Plan Individual">
+                    <div class="card-body d-flex flex-column p-4">
+                        <h3 class="h4 card-title fw-bold text-white mb-2">Plan Individual</h3>
+                        
+                        <!-- PRECIO MÁS PEQUEÑO Y EQUILIBRADO -->
+                        <h4 class="fs-3 text-warning fw-bold mb-3">$80.000 COP <span class="fs-6 text-secondary fw-normal">/ mes</span></h4>
+                        
+                        <p class="text-light small fw-bold mb-3 p-2 bg-dark rounded border border-secondary">
+                            <i class="bi bi-person-fill text-warning"></i> 1 Barbero
+                        </p>
+                        <p class="card-text text-light flex-grow-1 opacity-75 fs-6 text-start">
+                            Ideal para profesionales independientes. Gestiona tu agenda, recibe citas al instante y mejora tu visibilidad local.
+                        </p>
+                        <a href="{% url 'pagar_plan' %}" class="btn btn-outline-warning fw-bold py-3 w-100 mt-3 btn-hover-scale rounded-pill">
+                            💳 Seleccionar Plan
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Plan 2: Studio -->
+            <div class="col-md-4 animate-up delay-2">
+                <div class="card glass-card text-white h-100 shadow-lg overflow-hidden rounded-4">
+                    <img src="https://st2.depositphotos.com/5444644/11566/i/450/depositphotos_115665026-stock-photo-barbers-doing-haircuts-for-clients.jpg" class="card-img-top card-img-custom" style="height: 200px;" alt="Plan Studio">
+                    <div class="card-body d-flex flex-column p-4">
+                        <h3 class="h4 card-title fw-bold text-white mb-2">Plan Studio</h3>
+                        
+                        <!-- PRECIO MÁS PEQUEÑO Y EQUILIBRADO -->
+                        <h4 class="fs-3 text-warning fw-bold mb-3">$150.000 COP <span class="fs-6 text-secondary fw-normal">/ mes</span></h4>
+                        
+                        <p class="text-light small fw-bold mb-3 p-2 bg-dark rounded border border-secondary">
+                            <i class="bi bi-people-fill text-warning"></i> 2-4 Barberos
+                        </p>
+                        <p class="card-text text-light flex-grow-1 opacity-75 fs-6 text-start">
+                            Perfecto para locales en crecimiento. Administra múltiples agendas desde un solo lugar y optimiza los tiempos de espera.
+                        </p>
+                        <a href="{% url 'pagar_plan' %}" class="btn btn-outline-warning fw-bold py-3 w-100 mt-3 btn-hover-scale rounded-pill">
+                            💳 Seleccionar Plan
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Plan 3: Élite -->
+            <div class="col-md-4 animate-up delay-3">
+                <div class="card glass-card text-white h-100 shadow-lg overflow-hidden rounded-4">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcShMrDMUZPOlNvl--n99iYFWB8b9fPD5E9kwofln5RiMbfL9g28vM221eDe&s=10" class="card-img-top card-img-custom" style="height: 200px;" alt="Plan Élite">
+                    <div class="card-body d-flex flex-column p-4">
+                        <h3 class="h4 card-title fw-bold text-white mb-2">Plan Élite</h3>
+                        
+                        <!-- PRECIO MÁS PEQUEÑO Y EQUILIBRADO -->
+                        <h4 class="fs-3 text-warning fw-bold mb-3">$200.000 COP <span class="fs-6 text-secondary fw-normal">/ mes</span></h4>
+                        
+                        <p class="text-light small fw-bold mb-3 p-2 bg-dark rounded border border-secondary">
+                            <i class="bi bi-star-fill text-warning"></i> +5 Barberos
+                        </p>
+                        <p class="card-text text-light flex-grow-1 opacity-75 fs-6 text-start">
+                            La solución definitiva para barberías grandes. Personalización total, reportes detallados y soporte prioritario.
+                        </p>
+                        <a href="{% url 'pagar_plan' %}" class="btn btn-outline-warning fw-bold py-3 w-100 mt-3 btn-hover-scale rounded-pill">
+                            💳 Seleccionar Plan
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- ================= FOOTER / PIE DE PÁGINA ================= -->
     <footer class="custom-footer text-light py-5 mt-5 animate-up delay-2">
         <div class="container-fluid px-4 px-md-5">
@@ -272,7 +355,5 @@
             </div>
         </div>
     </footer>
-
 </div>
-
 {% endblock %}

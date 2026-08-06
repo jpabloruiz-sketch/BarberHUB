@@ -105,7 +105,7 @@
                 <!-- Menú de Navegación Centrado Dinámico -->
                 <ul class="navbar-nav mx-auto text-center my-2 my-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link nav-link-barberhub {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'inicio' %}">Inicio</a>
+                        <a class="nav-link nav-link-barberhub {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'home' %}">Inicio</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link nav-link-barberhub {% if request.resolver_match.url_name == 'barberias' %}active{% endif %}" href="{% url 'barberias' %}">Barberías</a> 
@@ -113,6 +113,17 @@
                     <li class="nav-item">
                         <a class="nav-link nav-link-barberhub {% if request.resolver_match.url_name == 'soporte' %}active{% endif %}" href="{% url 'soporte' %}">Soporte y contacto</a>
                     </li>
+
+                    <!-- BOTÓN CONDICIONAL SOLO PARA BARBEROS -->
+                    {% if user.is_authenticated %}
+                        {% if user.perfil.rol == 'BARBERO' %}
+                            <li class="nav-item">
+                                <a class="nav-link nav-link-barberhub {% if request.resolver_match.url_name == 'panel_barbero' %}active{% endif %}" href="{% url 'panel_barbero' %}">
+                                    💈 Mi Barbería
+                                </a>
+                            </li>
+                        {% endif %}
+                    {% endif %}
                 </ul>
 
                 <!-- Sección de Usuario / Autenticación -->
@@ -153,9 +164,7 @@
             navLinks.forEach(link => {
                 const linkPath = link.getAttribute('href');
                 
-                // Si la ruta del botón coincide exactamente con la URL actual del navegador
                 if (linkPath && linkPath !== '#' && currentPath === linkPath) {
-                    // Remover 'active' de todos los demás enlaces primero
                     navLinks.forEach(l => l.classList.remove('active'));
                     link.classList.add('active');
                 }

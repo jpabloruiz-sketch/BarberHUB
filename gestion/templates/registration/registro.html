@@ -3,236 +3,271 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>BarberHUB | Registro</title>
 
+<!-- Iconos Lucide -->
+<script src="https://unpkg.com/lucide@latest"></script>
+
 <style>
-
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:'Segoe UI',sans-serif;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
 }
 
-body{
-    min-height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    background:#0a0a0a;
-    padding:20px;
+body {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #0d0d0d;
+    padding: 20px;
 }
 
-/* Card principal */
-.registro-container{
-    width:950px;
-    max-width:100%;
-    min-height:550px;
-    display:flex;
-    overflow:hidden;
-    border-radius:25px;
-    background:#151515;
-    box-shadow:0 0 40px rgba(212,175,55,.2);
+/* Contenedor principal */
+.registro-container {
+    width: 1000px;
+    max-width: 100%;
+    min-height: 600px;
+    display: flex;
+    border-radius: 20px;
+    background: #141414;
+    border: 1px solid rgba(212, 175, 55, 0.25);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 30px rgba(212, 175, 55, 0.15);
+    overflow: hidden;
 }
 
-/* Panel izquierdo */
-.info{
-    flex:1;
-    background:linear-gradient(
-        135deg,
-        #e5b827,
-        #715e24
-    );
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-    padding:40px;
-    text-align:center;
+/* Panel Izquierdo */
+.info {
+    flex: 1;
+    background: linear-gradient(145deg, #1f1b0e 0%, #d4af37 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+    text-align: center;
 }
 
-.info .logo{
-    font-size:90px;
-    margin-bottom:20px;
+.info .logo-box {
+    width: 90px;
+    height: 90px;
+    background: rgba(0,0,0,0.4);
+    border: 2px solid #ffd700;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 45px;
+    margin-bottom: 20px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
 }
 
-.info h1{
-    color:white;
-    margin-bottom:15px;
-    font-size:2.5rem;
+.info h1 {
+    color: #ffffff;
+    font-size: 2.2rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    margin-bottom: 15px;
 }
 
-.info p{
-    color:white;
-    line-height:1.8;
-    font-size:1.1rem;
+.info p {
+    color: #e0e0e0;
+    line-height: 1.6;
+    font-size: 0.95rem;
 }
 
-/* Panel derecho */
-.formulario{
-    flex:1.3;
-    padding:50px;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
+/* Panel Derecho */
+.formulario {
+    flex: 1.3;
+    padding: 40px 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: #141414;
 }
 
-.formulario h2{
-    color:white;
-    margin-bottom:10px;
-    font-size:2rem;
+.formulario h2 {
+    color: #ffffff;
+    font-size: 1.8rem;
+    margin-bottom: 6px;
 }
 
-.formulario .subtitulo{
-    color:#cfcfcf;
-    margin-bottom:30px;
+.formulario .subtitulo {
+    color: #888;
+    font-size: 0.9rem;
+    margin-bottom: 25px;
 }
 
-/* Formulario Django */
-form p{
-    margin-bottom:18px;
+/* Grid de Formulario */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
 }
 
-form label{
-    color:white;
-    font-weight:600;
-    margin-bottom:6px;
-    display:block;
+.full-width {
+    grid-column: span 2;
 }
 
-form input,
-form select,
-form textarea{
-    width:100%;
-    padding:14px;
-    background:#222;
-    border:1px solid #333;
-    border-radius:12px;
-    color:white;
-    transition:.3s;
+.input-group {
+    display: flex;
+    flex-direction: column;
+    position: relative;
 }
 
-form input:focus,
-form select:focus,
-form textarea:focus{
-    outline:none;
-    border-color:#d4af37;
-    box-shadow:0 0 15px rgba(212,175,55,.4);
+.input-group label {
+    color: #e0e0e0;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 6px;
 }
 
-/* Botón */
-button{
-    width:100%;
-    padding:15px;
-    margin-top:10px;
-    border:none;
-    border-radius:50px;
-    background:linear-gradient(45deg,#d4af37,#ffd700);
-    color:black;
-    font-size:16px;
-    font-weight:bold;
-    cursor:pointer;
-    transition:.3s;
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
 }
 
-button:hover{
-    transform:translateY(-3px);
-    box-shadow:0 0 20px rgba(212,175,55,.5);
+/* Íconos con brillo alto (blanco brillante con neón) */
+.input-wrapper i,
+.input-wrapper svg {
+    position: absolute;
+    left: 14px;
+    color: #ffffff !important;
+    stroke: #ffffff !important;
+    width: 20px;
+    height: 20px;
+    transition: all 0.3s ease;
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.9));
+    z-index: 2;
+    pointer-events: none;
 }
 
-/* Link login */
-.login-link{
-    margin-top:25px;
-    text-align:center;
-    color:white;
+/* Estilo para los inputs */
+.input-wrapper input {
+    width: 100%;
+    padding: 12px 42px 12px 44px;
+    background: #1c1c1c;
+    border: 1px solid #333;
+    border-radius: 10px;
+    color: #ffffff;
+    font-size: 0.9rem;
+    outline: none;
+    transition: all 0.3s ease;
 }
 
-.login-link a{
-    color:#ffd700;
-    text-decoration:none;
-    font-weight:bold;
+.input-wrapper input::placeholder {
+    color: #777;
 }
 
-.login-link a:hover{
-    color:white;
+.input-wrapper input:focus {
+    border-color: #d4af37;
+    box-shadow: 0 0 12px rgba(212, 175, 55, 0.3);
+    background: #222;
 }
 
-
-.helptext{
-    display:block;
-    margin-top:8px;
-    padding:12px;
-    background:#1e1e1e;
-    border-left:4px solid #d4af37;
-    border-radius:8px;
-    color:white !important;
-    font-size:14px;
-    line-height:1.5;
+/* Cambia el ícono a dorado cuando se enfoca el campo */
+.input-wrapper input:focus ~ svg,
+.input-wrapper input:focus + svg,
+.input-wrapper input:focus ~ i {
+    color: #d4af37 !important;
+    stroke: #d4af37 !important;
+    filter: drop-shadow(0 0 6px rgba(212, 175, 55, 0.9));
 }
 
-.helptext ul{
-    margin-top:8px;
-    padding-left:20px;
+/* Botón de mostrar/ocultar contraseña */
+.toggle-password,
+.input-wrapper svg.toggle-password {
+    left: auto !important;
+    right: 14px !important;
+    cursor: pointer;
+    pointer-events: auto !important;
+    opacity: 0.9;
 }
 
-.helptext ul li{
-    color:white !important;
-    margin-bottom:5px;
+.toggle-password:hover,
+.input-wrapper svg.toggle-password:hover {
+    color: #d4af37 !important;
+    stroke: #d4af37 !important;
+    filter: drop-shadow(0 0 6px rgba(212, 175, 55, 0.9));
 }
 
-/* Listas de requisitos */
-form ul{
-    background:#1e1e1e;
-    border-left:4px solid #d4af37;
-    border-radius:8px;
-    padding:12px 12px 12px 30px;
-    margin-top:8px;
-    margin-bottom:15px;
+/* Estilos de errores */
+.error-msg {
+    color: #ff5252;
+    font-size: 0.78rem;
+    margin-top: 4px;
 }
 
-form ul li{
-    color:white !important;
-    margin-bottom:6px;
-    line-height:1.4;
+.non-field-errors {
+    background: rgba(255, 82, 82, 0.1);
+    border-left: 3px solid #ff5252;
+    padding: 10px 14px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    color: #ff8a8a;
+    font-size: 0.85rem;
 }
 
-/* Errores de formulario */
-.errorlist{
-    list-style:none;
-    padding:12px;
-    margin-top:8px;
-    margin-bottom:10px;
-    background:rgba(255,0,0,.15);
-    border-left:4px solid #ff4d4d;
-    border-radius:8px;
+/* Botón principal */
+.btn-submit {
+    width: 100%;
+    padding: 14px;
+    margin-top: 22px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #d4af37, #f3e5ab);
+    color: #000;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
-.errorlist li{
-    color:#ff8a8a !important;
-    font-weight:600;
+.btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
 }
+
+.login-link {
+    margin-top: 20px;
+    text-align: center;
+    color: #888;
+    font-size: 0.88rem;
+}
+
+.login-link a {
+    color: #d4af37;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.login-link a:hover {
+    text-decoration: underline;
+}
+
 /* Responsive */
-@media(max-width:900px){
-
-    .registro-container{
-        flex-direction:column;
+@media (max-width: 850px) {
+    .registro-container {
+        flex-direction: column;
     }
-
-    .info{
-        padding:30px;
+    .info {
+        padding: 30px;
     }
-
-    .info .logo{
-        font-size:60px;
+    .formulario {
+        padding: 30px 20px;
     }
-
-    .formulario{
-        padding:30px;
+    .form-grid {
+        grid-template-columns: 1fr;
     }
-
+    .full-width {
+        grid-column: span 1;
+    }
 }
-
 </style>
 </head>
 <body>
@@ -240,44 +275,125 @@ form ul li{
 <div class="registro-container">
 
     <div class="info">
-        <div class="logo">💈</div>
-
+        <div class="logo-box">💈</div>
         <h1>BarberHUB</h1>
-
-        <p>
-            Crea tu cuenta y comienza a gestionar
-            tus citas, barberías y servicios desde
-            una sola plataforma moderna.
-        </p>
+        <p>Crea tu cuenta y comienza a gestionar tus citas, barberías y servicios desde una sola plataforma moderna.</p>
     </div>
 
     <div class="formulario">
-
         <h2>Crear Cuenta</h2>
+        <p class="subtitulo">Regístrate para acceder a BarberHUB.</p>
 
-        <p class="subtitulo">
-            Regístrate para acceder a BarberHUB.
-        </p>
+        {% if form.non_field_errors %}
+            <div class="non-field-errors">
+                {% for error in form.non_field_errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
 
-        <form method="post">
+        <form method="post" id="registerForm">
             {% csrf_token %}
-            {{ form.as_p }}
 
-            <button type="submit">
-                Crear Cuenta
-            </button>
+            <div class="form-grid">
+
+                <!-- Usuario -->
+                <div class="input-group full-width">
+                    <label for="id_username">Nombre de usuario *</label>
+                    <div class="input-wrapper">
+                        <i data-lucide="user"></i>
+                        <input type="text" name="username" id="id_username" placeholder="Ingresa tu nombre de usuario" required>
+                    </div>
+                    {% if form.username.errors %}
+                        <span class="error-msg">{{ form.username.errors.0 }}</span>
+                    {% endif %}
+                </div>
+
+                <!-- Correo Electrónico -->
+                <div class="input-group full-width">
+                    <label for="id_email">Correo electrónico *</label>
+                    <div class="input-wrapper">
+                        <i data-lucide="mail"></i>
+                        <input type="email" name="email" id="id_email" placeholder="ejemplo@correo.com" required>
+                    </div>
+                    {% if form.email.errors %}
+                        <span class="error-msg">{{ form.email.errors.0 }}</span>
+                    {% endif %}
+                </div>
+
+                <!-- Teléfono / Celular -->
+                <div class="input-group full-width">
+                    <label for="id_telefono">Teléfono / Celular</label>
+                    <div class="input-wrapper">
+                        <i data-lucide="phone"></i>
+                        <input type="tel" name="telefono" id="id_telefono" placeholder="Ej: 300 123 4567">
+                    </div>
+                    {% if form.telefono.errors %}
+                        <span class="error-msg">{{ form.telefono.errors.0 }}</span>
+                    {% endif %}
+                </div>
+
+                <!-- Contraseña -->
+                <div class="input-group">
+                    <label for="id_password">Contraseña *</label>
+                    <div class="input-wrapper">
+                        <i data-lucide="lock"></i>
+                        <input type="password" name="password" id="id_password" placeholder="••••••••" required>
+                        <i data-lucide="eye" class="toggle-password" onclick="togglePass('id_password', this)"></i>
+                    </div>
+                    {% if form.password.errors %}
+                        <span class="error-msg">{{ form.password.errors.0 }}</span>
+                    {% endif %}
+                </div>
+
+                <!-- Confirmar Contraseña -->
+                <div class="input-group">
+                    <label for="id_confirm_password">Confirmar contraseña *</label>
+                    <div class="input-wrapper">
+                        <i data-lucide="shield-check"></i>
+                        <input type="password" name="confirm_password" id="id_confirm_password" placeholder="••••••••" required>
+                        <i data-lucide="eye" class="toggle-password" onclick="togglePass('id_confirm_password', this)"></i>
+                    </div>
+                    {% if form.confirm_password.errors %}
+                        <span class="error-msg">{{ form.confirm_password.errors.0 }}</span>
+                    {% endif %}
+                </div>
+
+            </div>
+
+            <button type="submit" class="btn-submit">Crear Cuenta</button>
         </form>
 
         <div class="login-link">
-            ¿Ya tienes cuenta?
-            <a href="{% url 'login' %}">
-                Inicia sesión aquí
-            </a>
+            ¿Ya tienes cuenta? <a href="{% url 'login' %}">Inicia sesión aquí</a>
         </div>
-
     </div>
 
 </div>
+
+<script>
+    // Inicializar íconos Lucide
+    lucide.createIcons();
+
+    function togglePass(inputId, element) {
+        const input = document.getElementById(inputId);
+        if (!input) return;
+
+        let iconEl = element;
+        if (element.tagName.toLowerCase() === 'path') {
+            iconEl = element.parentElement;
+        }
+
+        if (input.type === "password") {
+            input.type = "text";
+            iconEl.setAttribute("data-lucide", "eye-off");
+        } else {
+            input.type = "password";
+            iconEl.setAttribute("data-lucide", "eye");
+        }
+        lucide.createIcons();
+    }
+</script>
 
 </body>
 </html>
