@@ -55,10 +55,21 @@ def registro(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         rol = request.POST.get('rol', 'CLIENTE')
-        
+        telefono = request.POST.get('telefono', '')
+        email = request.POST.get('email', '')
+
         if form.is_valid():
             user = form.save()
-            PerfilUsuario.objects.create(user=user, rol=rol)
+            if email:
+                user.email = email
+                user.save()
+            
+            # Crea el perfil con el rol y teléfono
+            PerfilUsuario.objects.create(
+                user=user, 
+                rol=rol,
+                telefono=telefono
+            )
             
             username = form.cleaned_data.get('username')
             messages.success(request, f'¡Cuenta creada para {username}! Ya puedes iniciar sesión.')
@@ -75,12 +86,10 @@ def agendar_cita(request):
     barberia_id = request.GET.get('barberia_id')
     barberia_seleccionada = None
 
-    # Si viene el parámetro de barbería por URL, filtramos SOLO esa barbería
     if barberia_id:
         barberia_seleccionada = Barberia.objects.filter(id=barberia_id).first()
         todas_barberias = [barberia_seleccionada] if barberia_seleccionada else []
     else:
-        # Si no se pasó ID, cargamos las barberías para que el usuario escoja una
         todas_barberias = Barberia.objects.all()
 
     servicios = []
@@ -183,6 +192,14 @@ def editar_servicio(request, servicio_id):
     return redirect('panel_barbero')
 
 @login_required
+def eliminar_servicio(request, servicio_id):
+    servicio = get_object_or_404(Servicio, id=servicio_id, barberia__dueno=request.user)
+    if request.method == 'POST':
+        servicio.delete()
+        messages.success(request, 'El servicio ha sido eliminado correctamente.')
+    return redirect('panel_barbero')
+
+@login_required
 def agregar_horario(request):
     if request.method == 'POST':
         barberia = Barberia.objects.filter(dueno=request.user).first()
@@ -235,6 +252,14 @@ def editar_horario(request, horario_id):
             horario.hora_cierre = cierre
             horario.save()
             messages.success(request, 'Horario actualizado correctamente.')
+    return redirect('panel_barbero')
+
+@login_required
+def eliminar_horario(request, horario_id):
+    horario = get_object_or_404(HorarioAtencion, id=horario_id, barberia__dueno=request.user)
+    if request.method == 'POST':
+        horario.delete()
+        messages.success(request, 'El horario ha sido eliminado correctamente.')
     return redirect('panel_barbero')
 
 

@@ -7,7 +7,6 @@
 <title>BarberHUB | Iniciar Sesión</title>
 
 <style>
-
 *{
     margin:0;
     padding:0;
@@ -20,8 +19,7 @@ body{
     display:flex;
     justify-content:center;
     align-items:center;
-    background:
-    radial-gradient(circle at top,#3d2f00 0%,#111 35%,#000 100%);
+    background: radial-gradient(circle at top,#3d2f00 0%,#111 35%,#000 100%);
     overflow:hidden;
 }
 
@@ -87,7 +85,7 @@ h2{
 .subtitulo{
     text-align:center;
     color:#ccc;
-    margin-bottom:30px;
+    margin-bottom:20px;
 }
 
 a{
@@ -99,18 +97,37 @@ a:hover{
     color:white;
 }
 
-form p{
-    margin-bottom:18px;
+.registro{
+    text-align:center;
+    margin-bottom:20px;
+    color:#ccc;
 }
 
-form label{
+/* CAJA DE ERRORES VISIBLE */
+.error-box {
+    background: rgba(255, 77, 77, 0.2);
+    border: 1px solid #ff4d4d;
+    color: #ffffff;
+    padding: 14px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    text-align: center;
+    line-height: 1.4;
+}
+
+.form-group {
+    margin-bottom: 18px;
+}
+
+.form-group label{
     color:#FFD700;
     font-weight:600;
     display:block;
     margin-bottom:6px;
 }
 
-form input{
+.form-group input{
     width:100%;
     padding:14px;
     border:none;
@@ -119,9 +136,10 @@ form input{
     color:white;
     border:1px solid #333;
     transition:.3s;
+    font-size: 15px;
 }
 
-form input:focus{
+.form-group input:focus{
     outline:none;
     border-color:#FFD700;
     box-shadow:0 0 15px rgba(255,215,0,.4);
@@ -152,13 +170,6 @@ button:hover{
     color:#999;
     font-size:14px;
 }
-
-.registro{
-    text-align:center;
-    margin-bottom:20px;
-    color:#ccc;
-}
-
 </style>
 </head>
 <body>
@@ -182,7 +193,25 @@ button:hover{
 
     <form method="post">
         {% csrf_token %}
-        {{ form.as_p }}
+
+        <!-- Muestra errores generales de autenticación en letra blanca sobre fondo rojo -->
+        {% if form.non_field_errors %}
+            <div class="error-box">
+                {% for error in form.non_field_errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="form-group">
+            <label for="{{ form.username.id_for_label }}">Nombre de usuario:</label>
+            {{ form.username }}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.password.id_for_label }}">Contraseña:</label>
+            {{ form.password }}
+        </div>
 
         <button type="submit">
             Entrar al Sistema

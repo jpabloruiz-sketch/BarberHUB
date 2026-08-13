@@ -144,9 +144,17 @@
                                     <span class="badge bg-warning text-dark fs-6 px-3 py-2 fw-bold precio-badge" data-precio="{{ s.precio }}">
                                         $ {{ s.precio }} COP
                                     </span>
+                                    <!-- Botón Editar Servicio -->
                                     <button type="button" class="btn btn-sm btn-outline-warning rounded-circle px-2 py-1" data-bs-toggle="modal" data-bs-target="#editServicioModal{{ s.id }}" title="Editar Servicio">
                                         ✏️
                                     </button>
+                                    <!-- Botón Eliminar Servicio -->
+                                    <form action="{% url 'eliminar_servicio' s.id %}" method="post" class="d-inline" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este servicio?');">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-outline-danger rounded-circle px-2 py-1" title="Eliminar Servicio">
+                                            🗑️
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
                             {% endfor %}
@@ -255,9 +263,17 @@
                                         {{ h.hora_apertura|time:"g:i" }} {% if h.hora_apertura.hour >= 12 %}PM{% else %}AM{% endif %} - 
                                         {{ h.hora_cierre|time:"g:i" }} {% if h.hora_cierre.hour >= 12 %}PM{% else %}AM{% endif %}
                                     </span>
+                                    <!-- Botón Editar Horario -->
                                     <button type="button" class="btn btn-sm btn-outline-warning rounded-circle px-2 py-1" data-bs-toggle="modal" data-bs-target="#editHorarioModal{{ h.id }}" title="Editar Horario">
                                         ✏️
                                     </button>
+                                    <!-- Botón Eliminar Horario (AGREGADO AQUÍ) -->
+                                    <form action="{% url 'eliminar_horario' h.id %}" method="post" class="d-inline" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este horario?');">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-outline-danger rounded-circle px-2 py-1" title="Eliminar Horario">
+                                            🗑️
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
                             {% endfor %}

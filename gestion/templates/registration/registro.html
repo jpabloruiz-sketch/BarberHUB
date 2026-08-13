@@ -131,7 +131,7 @@ body {
     width: 100%;
 }
 
-/* Íconos con brillo alto (blanco brillante con neón) */
+/* Íconos con brillo alto */
 .input-wrapper i,
 .input-wrapper svg {
     position: absolute;
@@ -146,8 +146,9 @@ body {
     pointer-events: none;
 }
 
-/* Estilo para los inputs */
-.input-wrapper input {
+/* Estilo para inputs y selects */
+.input-wrapper input,
+.input-wrapper select {
     width: 100%;
     padding: 12px 42px 12px 44px;
     background: #1c1c1c;
@@ -159,26 +160,23 @@ body {
     transition: all 0.3s ease;
 }
 
+.input-wrapper select option {
+    background: #141414;
+    color: #ffffff;
+}
+
 .input-wrapper input::placeholder {
     color: #777;
 }
 
-.input-wrapper input:focus {
+.input-wrapper input:focus,
+.input-wrapper select:focus {
     border-color: #d4af37;
     box-shadow: 0 0 12px rgba(212, 175, 55, 0.3);
     background: #222;
 }
 
-/* Cambia el ícono a dorado cuando se enfoca el campo */
-.input-wrapper input:focus ~ svg,
-.input-wrapper input:focus + svg,
-.input-wrapper input:focus ~ i {
-    color: #d4af37 !important;
-    stroke: #d4af37 !important;
-    filter: drop-shadow(0 0 6px rgba(212, 175, 55, 0.9));
-}
-
-/* Botón de mostrar/ocultar contraseña */
+/* Botón mostrar/ocultar contraseña */
 .toggle-password,
 .input-wrapper svg.toggle-password {
     left: auto !important;
@@ -186,13 +184,6 @@ body {
     cursor: pointer;
     pointer-events: auto !important;
     opacity: 0.9;
-}
-
-.toggle-password:hover,
-.input-wrapper svg.toggle-password:hover {
-    color: #d4af37 !important;
-    stroke: #d4af37 !important;
-    filter: drop-shadow(0 0 6px rgba(212, 175, 55, 0.9));
 }
 
 /* Estilos de errores */
@@ -203,12 +194,12 @@ body {
 }
 
 .non-field-errors {
-    background: rgba(255, 82, 82, 0.1);
-    border-left: 3px solid #ff5252;
-    padding: 10px 14px;
-    border-radius: 6px;
+    background: rgba(255, 82, 82, 0.2);
+    border: 1px solid #ff5252;
+    padding: 12px;
+    border-radius: 8px;
     margin-bottom: 20px;
-    color: #ff8a8a;
+    color: #ffffff;
     font-size: 0.85rem;
 }
 
@@ -250,23 +241,12 @@ body {
     text-decoration: underline;
 }
 
-/* Responsive */
 @media (max-width: 850px) {
-    .registro-container {
-        flex-direction: column;
-    }
-    .info {
-        padding: 30px;
-    }
-    .formulario {
-        padding: 30px 20px;
-    }
-    .form-grid {
-        grid-template-columns: 1fr;
-    }
-    .full-width {
-        grid-column: span 1;
-    }
+    .registro-container { flex-direction: column; }
+    .info { padding: 30px; }
+    .formulario { padding: 30px 20px; }
+    .form-grid { grid-template-columns: 1fr; }
+    .full-width { grid-column: span 1; }
 }
 </style>
 </head>
@@ -310,15 +290,24 @@ body {
                 </div>
 
                 <!-- Correo Electrónico -->
-                <div class="input-group full-width">
+                <div class="input-group">
                     <label for="id_email">Correo electrónico *</label>
                     <div class="input-wrapper">
                         <i data-lucide="mail"></i>
                         <input type="email" name="email" id="id_email" placeholder="ejemplo@correo.com" required>
                     </div>
-                    {% if form.email.errors %}
-                        <span class="error-msg">{{ form.email.errors.0 }}</span>
-                    {% endif %}
+                </div>
+
+                <!-- Tipo de Cuenta / Rol -->
+                <div class="input-group">
+                    <label for="id_rol">Tipo de Usuario *</label>
+                    <div class="input-wrapper">
+                        <i data-lucide="briefcase"></i>
+                        <select name="rol" id="id_rol">
+                            <option value="CLIENTE">Cliente</option>
+                            <option value="BARBERO">Barbero / Dueño de Barbería</option>
+                        </select>
+                    </div>
                 </div>
 
                 <!-- Teléfono / Celular -->
@@ -328,34 +317,31 @@ body {
                         <i data-lucide="phone"></i>
                         <input type="tel" name="telefono" id="id_telefono" placeholder="Ej: 300 123 4567">
                     </div>
-                    {% if form.telefono.errors %}
-                        <span class="error-msg">{{ form.telefono.errors.0 }}</span>
-                    {% endif %}
                 </div>
 
-                <!-- Contraseña -->
+                <!-- Contraseña (Exige mínimo 8 caracteres) -->
                 <div class="input-group">
-                    <label for="id_password">Contraseña *</label>
+                    <label for="id_password1">Contraseña * (Mínimo 8 caracteres)</label>
                     <div class="input-wrapper">
                         <i data-lucide="lock"></i>
-                        <input type="password" name="password" id="id_password" placeholder="••••••••" required>
-                        <i data-lucide="eye" class="toggle-password" onclick="togglePass('id_password', this)"></i>
+                        <input type="password" name="password1" id="id_password1" placeholder="••••••••" minlength="8" required>
+                        <i data-lucide="eye" class="toggle-password" onclick="togglePass('id_password1', this)"></i>
                     </div>
-                    {% if form.password.errors %}
-                        <span class="error-msg">{{ form.password.errors.0 }}</span>
+                    {% if form.password1.errors %}
+                        <span class="error-msg">{{ form.password1.errors.0 }}</span>
                     {% endif %}
                 </div>
 
-                <!-- Confirmar Contraseña -->
+                <!-- Confirmar Contraseña (Exige mínimo 8 caracteres) -->
                 <div class="input-group">
-                    <label for="id_confirm_password">Confirmar contraseña *</label>
+                    <label for="id_password2">Confirmar contraseña *</label>
                     <div class="input-wrapper">
                         <i data-lucide="shield-check"></i>
-                        <input type="password" name="confirm_password" id="id_confirm_password" placeholder="••••••••" required>
-                        <i data-lucide="eye" class="toggle-password" onclick="togglePass('id_confirm_password', this)"></i>
+                        <input type="password" name="password2" id="id_password2" placeholder="••••••••" minlength="8" required>
+                        <i data-lucide="eye" class="toggle-password" onclick="togglePass('id_password2', this)"></i>
                     </div>
-                    {% if form.confirm_password.errors %}
-                        <span class="error-msg">{{ form.confirm_password.errors.0 }}</span>
+                    {% if form.password2.errors %}
+                        <span class="error-msg">{{ form.password2.errors.0 }}</span>
                     {% endif %}
                 </div>
 
@@ -372,7 +358,6 @@ body {
 </div>
 
 <script>
-    // Inicializar íconos Lucide
     lucide.createIcons();
 
     function togglePass(inputId, element) {
