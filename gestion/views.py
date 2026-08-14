@@ -32,6 +32,29 @@ def barberias(request):
     return render(request, 'barberias.html', {'barberias': lista_barberias})
 
 def soporte(request):
+    if request.method == 'POST':
+        nombre = request.POST.get('nombre')
+        correo = request.POST.get('correo')
+        tipo = request.POST.get('tipo')
+        mensaje = request.POST.get('mensaje')
+
+        asunto = f"Soporte BarberHUB: {tipo}"
+        cuerpo = f"Nombre del remitente: {nombre}\nCorreo de contacto: {correo}\n\nMensaje:\n{mensaje}"
+
+        try:
+            send_mail(
+                subject=asunto,
+                message=cuerpo,
+                from_email=None, 
+                recipient_list=['soporte.barberhub@gmail.com'],
+                fail_silently=False,
+            )
+            messages.success(request, '¡Mensaje enviado con éxito! Te responderemos pronto.')
+        except Exception as e:
+            messages.error(request, 'Hubo un error al enviar el mensaje. Inténtalo de nuevo más tarde.')
+
+        return redirect('soporte')
+        
     return render(request, 'soporte.html')
 
 @login_required
@@ -90,7 +113,7 @@ def cerrar_sesion(request):
 
 @login_required
 def agendar_cita(request):
-    barberia_id = request.GET.get('barberia_id')
+    barberia_id = request.GET.get('barberia_id') or request.POST.get('barberia_id')
     
     barberia_seleccionada = None
     servicios = []
@@ -103,14 +126,80 @@ def agendar_cita(request):
             horarios = barberia_seleccionada.horarios.all()
 
     if request.method == 'POST':
+        nombre_cliente = request.POST.get('nombre_cliente')
+        telefono = request.POST.get('telefono')
+        fecha = request.POST.get('fecha')
+        hora = request.POST.get('hora')
+        servicios_ids = request.POST.getlist('servicios')
+
+        if not barberia_seleccionada:
+            messages.error(request, 'Debe seleccionar una barbería válida.')
+            return redirect('barberias')
+
+        # Crear la cita en la base de datos
+        cita = Cita.objects.create(
+            nombre_cliente=nombre_cliente,
+            telefono=telefono,
+            barberia=barberia_seleccionada,
+            fecha=fecha,
+            hora=hora,
+            estado='PENDIENTE'
+        )
+
+        # Asociar los servicios seleccionados (relación ManyToMany)
+        if servicios_ids:
+            cita.servicios.set(servicios_ids)
+
         messages.success(request, '¡Tu cita ha sido agendada con éxito!')
-        return redirect('home')
+        return redirect('historial')
 
     return render(request, 'agendar.html', {
         'barberia_seleccionada': barberia_seleccionada,
         'servicios': servicios,
         'horarios': horarios
     })
+
+
+@login_required
+def historial(request):
+    # Consulta las citas agendadas por el usuario actual
+    citas = Cita.objects.filter(
+        nombre_cliente=request.user.username
+    ).prefetch_related('servicios', 'barberia').order_by('-fecha', '-hora')
+    
+    return render(request, 'historial.html', {'citas': citas})
+
+
+@login_required
+def modificar_cita(request, cita_id):
+    # Asegura que la cita pertenezca al usuario logueado
+    cita = get_object_or_404(Cita, id=cita_id, nombre_cliente=request.user.username)
+    
+    if request.method == 'POST':
+        nueva_fecha = request.POST.get('fecha')
+        nueva_hora = request.POST.get('hora')
+        
+        if nueva_fecha and nueva_hora:
+            cita.fecha = nueva_fecha
+            cita.hora = nueva_hora
+            cita.save()
+            messages.success(request, 'La cita se ha reprogramado correctamente.')
+        else:
+            messages.error(request, 'Por favor ingresa fecha y hora válidas.')
+
+    return redirect('historial')
+
+
+@login_required
+def cancelar_cita(request, cita_id):
+    cita = get_object_or_404(Cita, id=cita_id, nombre_cliente=request.user.username)
+    
+    if request.method == 'POST':
+        cita.estado = 'CANCELADA'
+        cita.save()
+        messages.success(request, 'La cita ha sido cancelada.')
+
+    return redirect('historial')
 
 # ================= PANEL DE BARBERO =================
 

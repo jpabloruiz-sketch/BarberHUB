@@ -7,6 +7,7 @@ urlpatterns = [
     path('', views.home, name='inicio'),
     path('inicio/', views.home, name='home'),
     path('barberias/', views.barberias, name='barberias'),
+    path('historial/', views.historial, name='historial'),
     path('soporte/', views.soporte, name='soporte'),
     path('pagar-plan/', views.pagar_plan, name='pagar_plan'),
     path('logout/', views.cerrar_sesion, name='logout'),
@@ -18,6 +19,8 @@ urlpatterns = [
     
     # Citas
     path('agendar/', views.agendar_cita, name='agendar'),
+    path('cita/modificar/<int:cita_id>/', views.modificar_cita, name='modificar_cita'),
+    path('cita/cancelar/<int:cita_id>/', views.cancelar_cita, name='cancelar_cita'),
     
     # Panel Barbero
     path('panel-barbero/', views.panel_barbero, name='panel_barbero'),

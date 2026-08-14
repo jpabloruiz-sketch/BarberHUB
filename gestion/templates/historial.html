@@ -1,0 +1,247 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .full-width-wrapper {
+        width: 100vw;
+        position: relative;
+        left: 50%;
+        right: 50%;
+        margin-left: -50vw;
+        margin-right: -50vw;
+        overflow-x: hidden;
+        background-color: #0b0d10;
+        min-height: 90vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .glass-card {
+        background: rgba(22, 27, 34, 0.8) !important;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    }
+
+    .form-control-dark {
+        background-color: #161b22 !important;
+        border: 1px solid rgba(255, 255, 255, 0.15) !important;
+        color: #ffffff !important;
+        padding: 0.8rem 1rem;
+        border-radius: 10px;
+    }
+
+    .form-control-dark:focus {
+        border-color: #ffc107 !important;
+        box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.25) !important;
+    }
+
+    /* Opcional: efecto hover para los iconos de las redes sociales del footer */
+    .social-icon {
+        color: #6c757d;
+        transition: color 0.3s ease;
+    }
+    .social-icon:hover {
+        color: #ffc107;
+    }
+</style>
+
+<div class="full-width-wrapper py-5 px-3 px-md-5">
+    <div class="container-fluid px-lg-5" style="max-width: 1200px;">
+        
+        <!-- ENCABEZADO -->
+        <div class="text-center mb-5">
+            <span class="badge bg-warning text-dark fw-bold px-4 py-2 text-uppercase mb-3 rounded-pill shadow">
+                Gestión de Reservas
+            </span>
+            <h1 class="display-5 fw-extrabold text-white">Mi Historial de <span class="text-warning">Citas</span></h1>
+            <p class="text-white fs-5 mx-auto" style="max-width: 600px;">
+                Consulta tus citas agendadas, modifica tus horarios o cancela tus reservas en cualquier momento.
+            </p>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show text-center mb-4" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="row g-4">
+            {% if citas %}
+                {% for cita in citas %}
+                    <div class="col-lg-6">
+                        <div class="card glass-card text-white rounded-4 p-4 shadow h-100 position-relative">
+                            
+                            <!-- CABECERA DE LA TARJETA -->
+                            <div class="d-flex justify-content-between align-items-start mb-3 border-bottom border-secondary pb-3">
+                                <div>
+                                    <h4 class="fw-bold m-0 text-warning">{{ cita.barberia.nombre }}</h4>
+                                    <small class="text-white">📍 {{ cita.barberia.barrio }} • {{ cita.barberia.direccion }}</small>
+                                </div>
+                                <div>
+                                    {% if cita.estado == 'PENDIENTE' %}
+                                        <span class="badge bg-warning text-dark px-3 py-2 rounded-pill fw-bold">⌛ Pendiente</span>
+                                    {% elif cita.estado == 'CONFIRMADA' %}
+                                        <span class="badge bg-success px-3 py-2 rounded-pill fw-bold">✅ Confirmada</span>
+                                    {% else %}
+                                        <span class="badge bg-danger px-3 py-2 rounded-pill fw-bold">❌ Cancelada</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- DETALLES DE LA CITA -->
+                            <div class="row mb-3">
+                                <div class="col-6">
+                                    <span class="text-white small d-block">FECHA Y HORA</span>
+                                    <strong class="fs-6 text-white">📅 {{ cita.fecha|date:"d/m/Y" }}</strong><br>
+                                    <strong class="fs-6 text-warning">⏰ {{ cita.hora|time:"g:i A" }}</strong>
+                                </div>
+                                <div class="col-6">
+                                    <span class="text-white small d-block">TELÉFONO DE CONTACTO</span>
+                                    <strong class="fs-6 text-white">📞 {{ cita.telefono }}</strong>
+                                </div>
+                            </div>
+
+                            <!-- SERVICIOS CONTRATADOS -->
+                            <div class="mb-4">
+                                <span class="text-white small d-block mb-1">SERVICIOS RESERVADOS</span>
+                                <div class="d-flex flex-wrap gap-2">
+                                    {% for s in cita.servicios.all %}
+                                        <span class="badge bg-secondary text-light fw-normal p-2 rounded-3">
+                                            {{ s.nombre }} ($ {{ s.precio|floatformat:0 }} COP)
+                                        </span>
+                                    {% empty %}
+                                        <span class="text-white small">Corte general / Sin especificar</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <!-- ACCIONES (SOLO SI NO ESTÁ CANCELADA) -->
+                            {% if cita.estado != 'CANCELADA' %}
+                                <div class="d-flex gap-2 pt-3 border-top border-secondary mt-auto">
+                                    <button class="btn btn-outline-warning btn-sm rounded-pill fw-bold px-3 py-2" data-bs-toggle="modal" data-bs-target="#modalEditarCita{{ cita.id }}">
+                                        ✏️ Modificar Hora / Fecha
+                                    </button>
+
+                                    <form action="{% url 'cancelar_cita' cita.id %}" method="post" class="ms-auto" onsubmit="return confirm('¿Estás seguro de que deseas cancelar esta cita?');">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill fw-bold px-3 py-2">
+                                            ❌ Cancelar Cita
+                                        </button>
+                                    </form>
+                                </div>
+                            {% endif %}
+
+                        </div>
+                    </div>
+
+                    <!-- MODAL PARA REPROGRAMAR CITA -->
+                    <div class="modal fade" id="modalEditarCita{{ cita.id }}" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content glass-card text-white border border-secondary rounded-4 p-2">
+                                <div class="modal-header border-secondary">
+                                    <h5 class="modal-title fw-bold text-warning">✏️ Modificar Cita</h5>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <form action="{% url 'modificar_cita' cita.id %}" method="post">
+                                    {% csrf_token %}
+                                    <div class="modal-body">
+                                        <p class="text-white small mb-3">
+                                            Cambia el horario o la fecha para tu atención en <strong>{{ cita.barberia.nombre }}</strong>.
+                                        </p>
+                                        <div class="mb-3">
+                                            <label class="form-label text-white small fw-bold">NUEVA FECHA</label>
+                                            <input type="date" class="form-control form-control-dark" name="fecha" value="{{ cita.fecha|date:'Y-m-d' }}" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label text-white small fw-bold">NUEVA HORA</label>
+                                            <input type="time" class="form-control form-control-dark" name="hora" value="{{ cita.hora|time:'H:i' }}" required>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer border-secondary">
+                                        <button type="button" class="btn btn-outline-secondary rounded-pill" data-bs-dismiss="modal">Cerrar</button>
+                                        <button type="submit" class="btn btn-warning rounded-pill fw-bold text-dark">Guardar Cambios</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                {% endfor %}
+            {% else %}
+                <div class="col-12 text-center py-5">
+                    <div class="glass-card p-5 rounded-4 mx-auto" style="max-width: 500px;">
+                        <span class="fs-1 d-block mb-3">📅</span>
+                        <h4 class="text-white fw-bold">No tienes citas programadas</h4>
+                        <p class="text-white small">Cuando agendes un servicio en cualquier barbería, aparecerá en esta sección.</p>
+                        <a href="{% url 'barberias' %}" class="btn btn-warning rounded-pill fw-bold px-4 py-2 mt-2 text-dark">
+                            Explorar Barberías
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+    </div>
+
+    <!-- FOOTER BARBERHUB -->
+    <footer class="custom-footer text-light py-5 scroll-animate mt-5">
+        <div class="container-fluid px-3 px-md-5">
+            <div class="row g-4">
+                <div class="col-md-4 text-center text-md-start">
+                    <h4 class="fw-extrabold mb-3 fs-3">Barber<span class="text-warning">HUB</span></h4>
+                    <p class="text-secondary small pe-md-4 fs-6">
+                        La plataforma líder en gestión de citas e intermediación de barberías en Itagüí. Conectamos tu estilo con los mejores profesionales, rápido y sin complicaciones.
+                    </p>
+                </div>
+                
+                <div class="col-md-4 text-center">
+                    <h5 class="text-white mb-4 fw-bold fs-5">Horarios de Plataforma</h5>
+                    <ul class="list-unstyled text-secondary small fs-6">
+                        <li class="mb-2 d-flex justify-content-between px-md-4">
+                            <span>Lunes a Viernes:</span> <span class="text-warning fw-bold">9:00 AM - 8:00 PM</span>
+                        </li>
+                        <li class="mb-2 d-flex justify-content-between px-md-4">
+                            <span>Sábados:</span> <span class="text-warning fw-bold">8:00 AM - 9:00 PM</span>
+                        </li>
+                        <li class="mb-2 d-flex justify-content-between px-md-4">
+                            <span>Domingos y Festivos:</span> <span class="text-warning fw-bold">9:00 AM - 3:00 PM</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="col-md-4 text-center text-md-end">
+                    <h5 class="text-white mb-4 fw-bold">Síguenos en Redes</h5>
+                    <div class="d-flex justify-content-center justify-content-md-end gap-4 mb-3">
+                        <a href="https://www.instagram.com/j.estebantt/" class="social-icon text-decoration-none" title="Instagram">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                        </a>
+                        <a href="https://www.facebook.com/juanesteban.bonillatamayo?locale=es_LA" class="social-icon text-decoration-none" title="Facebook">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                        </a>
+                        <a href="https://w.app/60aqnn" class="social-icon text-decoration-none" title="WhatsApp">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+                        </a>
+                    </div>
+                    <p class="text-secondary small mt-3 fs-6">¡Únete a nuestra comunidad!</p>
+                </div>
+            </div>
+            
+            <hr class="border-secondary mt-5 mb-4 opacity-25">
+            
+            <div class="row align-items-center">
+                <div class="col-md-6 text-center text-md-start text-secondary small mb-2 mb-md-0">
+                    &copy; 2026 BarberHUB Itagüí. Todos los derechos reservados.
+                </div>
+                <div class="col-md-6 text-center text-md-end text-secondary small">
+                    Hecho con 💛 para los barberos de Antioquia.
+                </div>
+            </div>
+        </div>
+    </footer>
+</div>
+{% endblock %}

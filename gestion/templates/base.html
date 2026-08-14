@@ -149,9 +149,16 @@
                     <li class="nav-item">
                         <a class="nav-link nav-link-barberhub {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'home' %}">Inicio</a>
                     </li>
+
                     <li class="nav-item">
                         <a class="nav-link nav-link-barberhub {% if request.resolver_match.url_name == 'barberias' %}active{% endif %}" href="{% url 'barberias' %}">Barberías</a> 
                     </li>
+
+                     <!-- NUEVO BOTÓN DE HISTORIAL -->
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-barberhub {% if request.resolver_match.url_name == 'historial' %}active{% endif %}" href="{% url 'historial' %}">Historial</a> 
+                    </li>
+                    
                     <li class="nav-item">
                         <a class="nav-link nav-link-barberhub {% if request.resolver_match.url_name == 'soporte' %}active{% endif %}" href="{% url 'soporte' %}">Soporte y contacto</a>
                     </li>
