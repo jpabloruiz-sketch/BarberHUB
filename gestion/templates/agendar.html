@@ -89,6 +89,7 @@
         </div>
 
         <form method="post" action="{% url 'agendar' %}">
+            {% csrf_token %}
 
             <div class="row g-4">
                 
@@ -264,5 +265,4 @@
         });
     });
 </script>
-
 {% endblock %}

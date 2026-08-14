@@ -78,6 +78,13 @@ def registro(request):
         form = UserCreationForm()
     return render(request, 'registration/registro.html', {'form': form})
 
+from django.contrib.auth import logout
+
+def cerrar_sesion(request):
+    logout(request)
+    messages.success(request, 'Has cerrado sesión exitosamente.')
+    return redirect('home')
+
 
 # ================= GESTIÓN DE CITAS =================
 

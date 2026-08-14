@@ -213,13 +213,10 @@
                     <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">
                         Cancelar
                     </button>
-                    <!-- Formulario POST que ejecuta la salida -->
-                    <form action="{% url 'logout' %}" method="post" class="m-0">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-danger fw-bold rounded-pill px-4">
-                            Sí, Cerrar Sesión
-                        </button>
-                    </form>
+                    <!-- Enlace directo limpio -->
+                    <a href="{% url 'logout' %}" class="btn btn-danger fw-bold rounded-pill px-4 text-decoration-none">
+                        Sí, Cerrar Sesión
+                    </a>
                 </div>
             </div>
         </div>

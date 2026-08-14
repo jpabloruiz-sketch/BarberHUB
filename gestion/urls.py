@@ -9,6 +9,7 @@ urlpatterns = [
     path('barberias/', views.barberias, name='barberias'),
     path('soporte/', views.soporte, name='soporte'),
     path('pagar-plan/', views.pagar_plan, name='pagar_plan'),
+    path('logout/', views.cerrar_sesion, name='logout'),
     
     # Autenticación
     path('login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
