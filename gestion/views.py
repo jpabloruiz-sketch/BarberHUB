@@ -84,31 +84,26 @@ def registro(request):
 @login_required
 def agendar_cita(request):
     barberia_id = request.GET.get('barberia_id')
+    
     barberia_seleccionada = None
+    servicios = []
+    horarios = []
 
     if barberia_id:
         barberia_seleccionada = Barberia.objects.filter(id=barberia_id).first()
-        todas_barberias = [barberia_seleccionada] if barberia_seleccionada else []
-    else:
-        todas_barberias = Barberia.objects.all()
-
-    servicios = []
-    horarios = []
-    if barberia_seleccionada:
-        servicios = barberia_seleccionada.servicios.all()
-        horarios = barberia_seleccionada.horarios.all()
+        if barberia_seleccionada:
+            servicios = barberia_seleccionada.servicios.all()
+            horarios = barberia_seleccionada.horarios.all()
 
     if request.method == 'POST':
         messages.success(request, '¡Tu cita ha sido agendada con éxito!')
-        return redirect('inicio')
+        return redirect('home')
 
     return render(request, 'agendar.html', {
-        'barberias': todas_barberias,
         'barberia_seleccionada': barberia_seleccionada,
         'servicios': servicios,
         'horarios': horarios
     })
-
 
 # ================= PANEL DE BARBERO =================
 

@@ -89,57 +89,47 @@
         </div>
 
         <form method="post" action="{% url 'agendar' %}">
-            {% csrf_token %}
-            
-            <!-- Guardamos el ID de la barbería seleccionada -->
-            {% if barberia_seleccionada %}
-                <input type="hidden" name="barberia_id" value="{{ barberia_seleccionada.id }}">
-            {% endif %}
 
             <div class="row g-4">
                 
                 <!-- COLUMNA IZQUIERDA: PASOS DE SELECCIÓN (2/3) -->
                 <div class="col-lg-8">
                     
-                    <!-- PASO 1: BARBERÍA Y BARBERO -->
-<div class="card glass-card text-white rounded-4 p-4 mb-4 shadow">
-    <div class="d-flex align-items-center gap-3 mb-4">
-        <span class="step-number">1</span>
-        <h3 class="h4 m-0 fw-bold">Barbería y Barbero</h3>
-    </div>
+                    <!-- PASO 1: BARBERÍA Y BARBERO (FIJO E INVARIABLE) -->
+                    <div class="card glass-card text-white rounded-4 p-4 mb-4 shadow">
+                        <div class="d-flex align-items-center gap-3 mb-4">
+                            <span class="step-number">1</span>
+                            <h3 class="h4 m-0 fw-bold">Barbería y Barbero</h3>
+                        </div>
 
-    <div class="row g-3">
-        <div class="col-md-6">
-            <label class="form-label text-secondary small fw-bold">BARBERÍA SELECCIONADA</label>
-            {% if barberia_seleccionada %}
-                <!-- Muestra solo la barbería seleccionada -->
-                <input type="text" class="form-control form-control-dark" value="{{ barberia_seleccionada.nombre }} - {{ barberia_seleccionada.barrio|default:'Itagüí' }}" readonly>
-                <input type="hidden" name="barberia_select" value="{{ barberia_seleccionada.id }}">
-            {% else %}
-                <select class="form-select form-select-dark" name="barberia_select" onchange="location = this.value;" required>
-                    <option value="" selected disabled>Elige un establecimiento...</option>
-                    {% for b in barberias %}
-                        <option value="{% url 'agendar' %}?barberia_id={{ b.id }}">
-                            {{ b.nombre }} - {{ b.barrio|default:"Itagüí" }}
-                        </option>
-                    {% endfor %}
-                </select>
-            {% endif %}
-        </div>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-secondary small fw-bold">BARBERÍA SELECCIONADA</label>
+                                
+                                <!-- Campo de texto bloqueado que muestra el nombre actual -->
+                                <input type="text" class="form-control form-control-dark" value="{% if barberia_seleccionada %}{{ barberia_seleccionada.nombre }} - {{ barberia_seleccionada.barrio|default:'Itagüí' }}{% else %}Seleccione una barbería{% endif %}" readonly>
+                                
+                                <!-- Input oculto que envía el ID de forma segura sin dejar cambiarlo -->
+                                {% if barberia_seleccionada %}
+                                    <input type="hidden" name="barberia_id" value="{{ barberia_seleccionada.id }}">
+                                {% endif %}
+                                
+                                <small class="text-warning opacity-75 mt-1 d-block">🔒 Establecimiento fijado para esta reserva.</small>
+                            </div>
 
-        <div class="col-md-6">
-            <label class="form-label text-secondary small fw-bold">BARBERO DE PREFERENCIA</label>
-            <select class="form-select form-select-dark" name="barbero">
-                <option value="" selected>Cualquier barbero disponible</option>
-                {% if barberia_seleccionada %}
-                    <option value="{{ barberia_seleccionada.dueno.username }}">
-                        {{ barberia_seleccionada.dueno.username }} (Barbero Principal)
-                    </option>
-                {% endif %}
-            </select>
-        </div>
-    </div>
-</div>
+                            <div class="col-md-6">
+                                <label class="form-label text-secondary small fw-bold">BARBERO DE PREFERENCIA</label>
+                                <select class="form-select form-select-dark" name="barbero">
+                                    <option value="" selected>Cualquier barbero disponible</option>
+                                    {% if barberia_seleccionada and barberia_seleccionada.dueno %}
+                                        <option value="{{ barberia_seleccionada.dueno.username }}">
+                                            {{ barberia_seleccionada.dueno.username }} (Barbero Principal)
+                                        </option>
+                                    {% endif %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- PASO 2: SERVICIOS DINÁMICOS CON PRECIOS EN COP -->
                     <div class="card glass-card text-white rounded-4 p-4 mb-4 shadow">
@@ -156,7 +146,6 @@
                                         <label class="card glass-card glass-card-hover service-label p-3 h-100 rounded-3 text-white border" for="service_{{ s.id }}">
                                             <div class="d-flex justify-content-between align-items-center mb-2">
                                                 <span class="fw-bold fs-5">{{ s.nombre }}</span>
-                                                <!-- PRECIO FORMATEADO DINÁMICAMENTE -->
                                                 <span class="text-warning fw-bold fs-5 precio-cop" data-precio="{{ s.precio }}">
                                                     $ {{ s.precio }} COP
                                                 </span>
@@ -173,14 +162,13 @@
                         </div>
                     </div>
 
-                    <!-- PASO 3: FECHA Y HORARIOS CONFIGURADOS POR EL BARBERO -->
+                    <!-- PASO 3: FECHA Y HORARIOS -->
                     <div class="card glass-card text-white rounded-4 p-4 shadow">
                         <div class="d-flex align-items-center gap-3 mb-4">
                             <span class="step-number">3</span>
                             <h3 class="h4 m-0 fw-bold">Fecha y Hora</h3>
                         </div>
 
-                        <!-- SECCIÓN DE HORARIOS REALES DE ATENCIÓN -->
                         {% if horarios %}
                             <div class="mb-4">
                                 <label class="form-label text-secondary small fw-bold d-block mb-2">⏰ HORARIO DE ATENCIÓN DE ESTA BARBERÍA</label>
@@ -196,10 +184,6 @@
                                         </div>
                                     {% endfor %}
                                 </div>
-                            </div>
-                        {% else %}
-                            <div class="alert alert-dark border-secondary text-secondary small mb-4">
-                                ℹ️ Esta barbería aún no registra un horario fijo, pero puedes elegir una hora dentro de la jornada estándar.
                             </div>
                         {% endif %}
 
@@ -225,14 +209,12 @@
                             📋 Resumen de Cita
                         </h4>
 
-                        <!-- DATOS DEL CLIENTE -->
                         <div class="mb-4">
                             <label class="form-label text-secondary small fw-bold">DATOS DE CONTACTO</label>
                             <input type="text" class="form-control form-control-dark mb-2" placeholder="Nombre completo" name="nombre_cliente" value="{{ user.username }}" required>
                             <input type="tel" class="form-control form-control-dark" placeholder="Teléfono / WhatsApp" name="telefono" required>
                         </div>
 
-                        <!-- DETALLE DE UBICACIÓN -->
                         <ul class="list-unstyled text-secondary small mb-4">
                             <li class="d-flex justify-content-between mb-2">
                                 <span>Establecimiento</span>
@@ -252,7 +234,6 @@
 
                         <hr class="border-secondary opacity-50 my-4">
 
-                        <!-- BOTÓN CONFIRMAR -->
                         <button type="submit" class="btn btn-warning btn-lg fw-bold w-100 py-3 rounded-pill text-dark shadow">
                             ✅ Confirmar y Agendar
                         </button>
@@ -269,7 +250,6 @@
     </div>
 </div>
 
-<!-- SCRIPT PARA FORMATEAR LOS PRECIOS A PESOS COLOMBIANOS ($ 20.000 COP) -->
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const precios = document.querySelectorAll('.precio-cop');
@@ -278,7 +258,6 @@
             if (valor) {
                 let numero = parseInt(valor, 10);
                 if (!isNaN(numero)) {
-                    // Formato en Pesos Colombianos con separadores de miles (.)
                     el.textContent = '$ ' + numero.toLocaleString('es-CO') + ' COP';
                 }
             }
