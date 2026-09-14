@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BarberHUB | Registro</title>
+
+<!-- Iconos Lucide -->
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #0d0d0d;
+    padding: 20px;
+}
+
+/* Contenedor principal */
+.registro-container {
+    width: 1000px;
+    max-width: 100%;
+    min-height: 600px;
+    display: flex;
+    border-radius: 20px;
+    background: #141414;
+    border: 1px solid rgba(212, 175, 55, 0.25);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 30px rgba(212, 175, 55, 0.15);
+    overflow: hidden;
+}
+
+/* Panel Izquierdo */
+.info {
+    flex: 1;
+    background: linear-gradient(145deg, #1f1b0e 0%, #d4af37 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+    text-align: center;
+}
+
+.info .logo-box {
+    width: 90px;
+    height: 90px;
+    background: rgba(0,0,0,0.4);
+    border: 2px solid #ffd700;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 45px;
+    margin-bottom: 20px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+
+.info h1 {
+    color: #ffffff;
+    font-size: 2.2rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    margin-bottom: 15px;
+}
+
+.info p {
+    color: #e0e0e0;
+    line-height: 1.6;
+    font-size: 0.95rem;
+}
+
+/* Panel Derecho */
+.formulario {
+    flex: 1.3;
+    padding: 40px 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: #141414;
+}
+
+.formulario h2 {
+    color: #ffffff;
+    font-size: 1.8rem;
+    margin-bottom: 6px;
+}
+
+.formulario .subtitulo {
+    color: #888;
+    font-size: 0.9rem;
+    margin-bottom: 25px;
+}
+
+/* Grid de Formulario */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+}
+
+.full-width {
+    grid-column: span 2;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.input-group label {
+    color: #e0e0e0;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+/* Íconos con brillo alto */
+.input-wrapper i,
+.input-wrapper svg {
+    position: absolute;
+    left: 14px;
+    color: #ffffff !important;
+    stroke: #ffffff !important;
+    width: 20px;
+    height: 20px;
+    transition: all 0.3s ease;
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.9));
+    z-index: 2;
+    pointer-events: none;
+}
+
+/* Estilo para inputs y selects */
+.input-wrapper input,
+.input-wrapper select {
+    width: 100%;
+    padding: 12px 42px 12px 44px;
+    background: #1c1c1c;
+    border: 1px solid #333;
+    border-radius: 10px;
+    color: #ffffff;
+    font-size: 0.9rem;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.input-wrapper select option {
+    background: #141414;
+    color: #ffffff;
+}
+
+.input-wrapper input::placeholder {
+    color: #777;
+}
+
+.input-wrapper input:focus,
+.input-wrapper select:focus {
+    border-color: #d4af37;
+    box-shadow: 0 0 12px rgba(212, 175, 55, 0.3);
+    background: #222;
+}
+
+/* Botón mostrar/ocultar contraseña */
+.toggle-password,
+.input-wrapper svg.toggle-password {
+    left: auto !important;
+    right: 14px !important;
+    cursor: pointer;
+    pointer-events: auto !important;
+    opacity: 0.9;
+}
+
+/* Estilos de errores */
+.error-msg {
+    color: #ff5252;
+    font-size: 0.78rem;
+    margin-top: 4px;
+}
+
+.non-field-errors {
+    background: rgba(255, 82, 82, 0.2);
+    border: 1px solid #ff5252;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    color: #ffffff;
+    font-size: 0.85rem;
+}
+
+/* Botón principal */
+.btn-submit {
+    width: 100%;
+    padding: 14px;
+    margin-top: 22px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #d4af37, #f3e5ab);
+    color: #000;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+}
+
+.login-link {
+    margin-top: 20px;
+    text-align: center;
+    color: #888;
+    font-size: 0.88rem;
+}
+
+.login-link a {
+    color: #d4af37;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.login-link a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 850px) {
+    .registro-container { flex-direction: column; }
+    .info { padding: 30px; }
+    .formulario { padding: 30px 20px; }
+    .form-grid { grid-template-columns: 1fr; }
+    .full-width { grid-column: span 1; }
+}
+</style>
+</head>
+<body>
+
+<div class="registro-container">
+
+    <div class="info">
+        <div class="logo-box">💈</div>
+        <h1>BarberHUB</h1>
+        <p>Crea tu cuenta y comienza a gestionar tus citas, barberías y servicios desde una sola plataforma moderna.</p>
+    </div>
+
+    <div class="formulario">
+        <h2>Crear Cuenta</h2>
+        <p class="subtitulo">Regístrate para acceder a BarberHUB.</p>
+
+        {% if form.non_field_errors %}
+            <div class="non-field-errors">
+                {% for error in form.non_field_errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form method="post" id="registerForm">
+            {% csrf_token %}
+
+            <div class="form-grid">
+
+                <!-- Usuario -->
+                <div class="input-group full-width">
+                    <label for="id_username">Nombre de usuario *</label>
+                    <div class="input-wrapper">
+                        <i data-lucide="user"></i>
+                        <input type="text" name="username" id="id_username" placeholder="Ingresa tu nombre de usuario" required>
+                    </div>
+                    {% if form.username.errors %}
+                        <span class="error-msg">{{ form.username.errors.0 }}</span>
+                    {% endif %}
+                </div>
+
+                <!-- Correo Electrónico -->
+                <div class="input-group">
+                    <label for="id_email">Correo electrónico *</label>
+                    <div class="input-wrapper">
+                        <i data-lucide="mail"></i>
+                        <input type="email" name="email" id="id_email" placeholder="ejemplo@correo.com" required>
+                    </div>
+                </div>
+
+                <!-- Tipo de Cuenta / Rol -->
+                <div class="input-group">
+                    <label for="id_rol">Tipo de Usuario *</label>
+                    <div class="input-wrapper">
+                        <i data-lucide="briefcase"></i>
+                        <select name="rol" id="id_rol">
+                            <option value="CLIENTE">Cliente</option>
+                            <option value="BARBERO">Barbero / Dueño de Barbería</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Teléfono / Celular -->
+                <div class="input-group full-width">
+                    <label for="id_telefono">Teléfono / Celular</label>
+                    <div class="input-wrapper">
+                        <i data-lucide="phone"></i>
+                        <input type="tel" name="telefono" id="id_telefono" placeholder="Ej: 300 123 4567">
+                    </div>
+                </div>
+
+                <!-- Contraseña (Exige mínimo 8 caracteres) -->
+                <div class="input-group">
+                    <label for="id_password1">Contraseña * (Mínimo 8 caracteres)</label>
+                    <div class="input-wrapper">
+                        <i data-lucide="lock"></i>
+                        <input type="password" name="password1" id="id_password1" placeholder="••••••••" minlength="8" required>
+                        <i data-lucide="eye" class="toggle-password" onclick="togglePass('id_password1', this)"></i>
+                    </div>
+                    {% if form.password1.errors %}
+                        <span class="error-msg">{{ form.password1.errors.0 }}</span>
+                    {% endif %}
+                </div>
+
+                <!-- Confirmar Contraseña (Exige mínimo 8 caracteres) -->
+                <div class="input-group">
+                    <label for="id_password2">Confirmar contraseña *</label>
+                    <div class="input-wrapper">
+                        <i data-lucide="shield-check"></i>
+                        <input type="password" name="password2" id="id_password2" placeholder="••••••••" minlength="8" required>
+                        <i data-lucide="eye" class="toggle-password" onclick="togglePass('id_password2', this)"></i>
+                    </div>
+                    {% if form.password2.errors %}
+                        <span class="error-msg">{{ form.password2.errors.0 }}</span>
+                    {% endif %}
+                </div>
+
+            </div>
+
+            <button type="submit" class="btn-submit">Crear Cuenta</button>
+        </form>
+
+        <div class="login-link">
+            ¿Ya tienes cuenta? <a href="{% url 'login' %}">Inicia sesión aquí</a>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    lucide.createIcons();
+
+    function togglePass(inputId, element) {
+        const input = document.getElementById(inputId);
+        if (!input) return;
+
+        let iconEl = element;
+        if (element.tagName.toLowerCase() === 'path') {
+            iconEl = element.parentElement;
+        }
+
+        if (input.type === "password") {
+            input.type = "text";
+            iconEl.setAttribute("data-lucide", "eye-off");
+        } else {
+            input.type = "password";
+            iconEl.setAttribute("data-lucide", "eye");
+        }
+        lucide.createIcons();
+    }
+</script>
+
+</body>
+</html>

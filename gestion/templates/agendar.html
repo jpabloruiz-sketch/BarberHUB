@@ -1,0 +1,268 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    /* RESET DE ANCHO PARA OCUPAR EL 100% DE LA PANTALLA */
+    .full-width-wrapper {
+        width: 100vw;
+        position: relative;
+        left: 50%;
+        right: 50%;
+        margin-left: -50vw;
+        margin-right: -50vw;
+        overflow-x: hidden;
+        background-color: #0b0d10;
+        min-height: 90vh;
+    }
+
+    /* GLASSMORPHISM / TARJETAS MODERNAS */
+    .glass-card {
+        background: rgba(22, 27, 34, 0.8) !important;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    }
+
+    .glass-card-hover {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: pointer;
+    }
+
+    .glass-card-hover:hover {
+        border-color: rgba(255, 193, 7, 0.6) !important;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(255, 193, 7, 0.15);
+    }
+
+    /* ESTILOS DE FORMULARIO OSCURO */
+    .form-control-dark, .form-select-dark {
+        background-color: #161b22 !important;
+        border: 1px solid rgba(255, 255, 255, 0.15) !important;
+        color: #ffffff !important;
+        padding: 0.8rem 1rem;
+        border-radius: 10px;
+    }
+
+    .form-control-dark:focus, .form-select-dark:focus {
+        border-color: #ffc107 !important;
+        box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.25) !important;
+    }
+
+    /* PASOS Y CHECKBOX / RADIO CUSTOM */
+    .step-number {
+        width: 32px;
+        height: 32px;
+        background-color: #ffc107;
+        color: #000;
+        font-weight: bold;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .service-check:checked + .service-label {
+        border-color: #ffc107 !important;
+        background-color: rgba(255, 193, 7, 0.1) !important;
+    }
+
+    .schedule-badge {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        padding: 8px 12px;
+    }
+</style>
+
+<div class="full-width-wrapper py-5 px-3 px-md-5">
+    <div class="container-fluid px-lg-5">
+        
+        <!-- ENCABEZADO -->
+        <div class="text-center mb-5">
+            <span class="badge bg-warning text-dark fw-bold px-4 py-2 text-uppercase mb-3 rounded-pill shadow">
+                Reserva Online • Itagüí
+            </span>
+            <h1 class="display-4 fw-extrabold text-white">Agenda tu <span class="text-warning">Cita</span></h1>
+            <p class="text-secondary fs-5 mx-auto" style="max-width: 650px;">
+                Selecciona la barbería de tu preferencia, escoge los servicios disponibles y agenda en el horario que mejor te convenga.
+            </p>
+        </div>
+
+        <form method="post" action="{% url 'agendar' %}">
+            {% csrf_token %}
+
+            <div class="row g-4">
+                
+                <!-- COLUMNA IZQUIERDA: PASOS DE SELECCIÓN (2/3) -->
+                <div class="col-lg-8">
+                    
+                    <!-- PASO 1: BARBERÍA Y BARBERO (FIJO E INVARIABLE) -->
+                    <div class="card glass-card text-white rounded-4 p-4 mb-4 shadow">
+                        <div class="d-flex align-items-center gap-3 mb-4">
+                            <span class="step-number">1</span>
+                            <h3 class="h4 m-0 fw-bold">Barbería y Barbero</h3>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-secondary small fw-bold">BARBERÍA SELECCIONADA</label>
+                                
+                                <!-- Campo de texto bloqueado que muestra el nombre actual -->
+                                <input type="text" class="form-control form-control-dark" value="{% if barberia_seleccionada %}{{ barberia_seleccionada.nombre }} - {{ barberia_seleccionada.barrio|default:'Itagüí' }}{% else %}Seleccione una barbería{% endif %}" readonly>
+                                
+                                <!-- Input oculto que envía el ID de forma segura sin dejar cambiarlo -->
+                                {% if barberia_seleccionada %}
+                                    <input type="hidden" name="barberia_id" value="{{ barberia_seleccionada.id }}">
+                                {% endif %}
+                                
+                                <small class="text-warning opacity-75 mt-1 d-block">🔒 Establecimiento fijado para esta reserva.</small>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label text-secondary small fw-bold">BARBERO DE PREFERENCIA</label>
+                                <select class="form-select form-select-dark" name="barbero">
+                                    <option value="" selected>Cualquier barbero disponible</option>
+                                    {% if barberia_seleccionada and barberia_seleccionada.dueno %}
+                                        <option value="{{ barberia_seleccionada.dueno.username }}">
+                                            {{ barberia_seleccionada.dueno.username }} (Barbero Principal)
+                                        </option>
+                                    {% endif %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PASO 2: SERVICIOS DINÁMICOS CON PRECIOS EN COP -->
+                    <div class="card glass-card text-white rounded-4 p-4 mb-4 shadow">
+                        <div class="d-flex align-items-center gap-3 mb-4">
+                            <span class="step-number">2</span>
+                            <h3 class="h4 m-0 fw-bold">Elige tus Servicios</h3>
+                        </div>
+
+                        <div class="row g-3">
+                            {% if servicios %}
+                                {% for s in servicios %}
+                                    <div class="col-md-6">
+                                        <input type="checkbox" class="btn-check service-check" id="service_{{ s.id }}" name="servicios" value="{{ s.id }}" autocomplete="off">
+                                        <label class="card glass-card glass-card-hover service-label p-3 h-100 rounded-3 text-white border" for="service_{{ s.id }}">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <span class="fw-bold fs-5">{{ s.nombre }}</span>
+                                                <span class="text-warning fw-bold fs-5 precio-cop" data-precio="{{ s.precio }}">
+                                                    $ {{ s.precio }} COP
+                                                </span>
+                                            </div>
+                                            <p class="text-secondary small m-0">⏱️ Duración aproximada: {{ s.duracion_minutos }} min.</p>
+                                        </label>
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="col-12 text-center py-4">
+                                    <p class="text-secondary mb-0">⚠️ Esta barbería aún no ha configurado sus servicios o cortes.</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- PASO 3: FECHA Y HORARIOS -->
+                    <div class="card glass-card text-white rounded-4 p-4 shadow">
+                        <div class="d-flex align-items-center gap-3 mb-4">
+                            <span class="step-number">3</span>
+                            <h3 class="h4 m-0 fw-bold">Fecha y Hora</h3>
+                        </div>
+
+                        {% if horarios %}
+                            <div class="mb-4">
+                                <label class="form-label text-secondary small fw-bold d-block mb-2">⏰ HORARIO DE ATENCIÓN DE ESTA BARBERÍA</label>
+                                <div class="d-flex flex-wrap gap-2">
+                                    {% for h in horarios %}
+                                        <div class="schedule-badge">
+                                            <strong class="text-warning">{{ h.get_dia_display }}:</strong> 
+                                            <span class="text-white small">
+                                                {{ h.hora_apertura|time:"g:i" }} {% if h.hora_apertura.hour >= 12 %}PM{% else %}AM{% endif %} 
+                                                a 
+                                                {{ h.hora_cierre|time:"g:i" }} {% if h.hora_cierre.hour >= 12 %}PM{% else %}AM{% endif %}
+                                            </span>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <label class="form-label text-secondary small fw-bold">FECHA DE CITA</label>
+                                <input type="date" class="form-control form-control-dark" name="fecha" required>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label text-secondary small fw-bold">HORA DESEADA</label>
+                                <input type="time" class="form-control form-control-dark" name="hora" required>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- COLUMNA DERECHA: RESUMEN DE LA RESERVA (1/3) -->
+                <div class="col-lg-4">
+                    <div class="card glass-card text-white rounded-4 p-4 shadow sticky-top" style="top: 2rem;">
+                        <h4 class="fw-bold mb-4 pb-3 border-bottom border-secondary">
+                            📋 Resumen de Cita
+                        </h4>
+
+                        <div class="mb-4">
+                            <label class="form-label text-secondary small fw-bold">DATOS DE CONTACTO</label>
+                            <input type="text" class="form-control form-control-dark mb-2" placeholder="Nombre completo" name="nombre_cliente" value="{{ user.username }}" required>
+                            <input type="tel" class="form-control form-control-dark" placeholder="Teléfono / WhatsApp" name="telefono" required>
+                        </div>
+
+                        <ul class="list-unstyled text-secondary small mb-4">
+                            <li class="d-flex justify-content-between mb-2">
+                                <span>Establecimiento</span>
+                                <span class="text-warning fw-bold">
+                                    {% if barberia_seleccionada %}{{ barberia_seleccionada.nombre }}{% else %}No seleccionado{% endif %}
+                                </span>
+                            </li>
+                            <li class="d-flex justify-content-between mb-2">
+                                <span>Ubicación</span>
+                                <span class="text-white">Itagüí, Antioquia</span>
+                            </li>
+                            <li class="d-flex justify-content-between mb-2">
+                                <span>Reserva</span>
+                                <span class="text-success fw-bold">SIN COSTO EXTRA</span>
+                            </li>
+                        </ul>
+
+                        <hr class="border-secondary opacity-50 my-4">
+
+                        <button type="submit" class="btn btn-warning btn-lg fw-bold w-100 py-3 rounded-pill text-dark shadow">
+                            ✅ Confirmar y Agendar
+                        </button>
+
+                        <p class="text-center text-secondary small mt-3 m-0">
+                            🔒 Pago directamente en la barbería al finalizar tu atención.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </form>
+
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const precios = document.querySelectorAll('.precio-cop');
+        precios.forEach(el => {
+            let valor = el.getAttribute('data-precio');
+            if (valor) {
+                let numero = parseInt(valor, 10);
+                if (!isNaN(numero)) {
+                    el.textContent = '$ ' + numero.toLocaleString('es-CO') + ' COP';
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}
