@@ -1,0 +1,248 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Favicon desde static local -->
+    <link rel="icon" type="image/png" href="{% static 'gestion/img/Logo - BarberHUB.png' %}">
+    <title>BarberHUB</title>
+    
+    <!-- Bootstrap 5 CSS Local -->
+    <link href="{% static 'gestion/css/bootstrap.min.css' %}" rel="stylesheet">
+    
+    <style>
+        body {
+            background-color: #121212; /* Fondo oscuro para toda la web */
+            color: #ffffff; /* Letras blancas por defecto */
+        }
+        
+        /* Navbar Negro y Fijo */
+        .navbar-barberhub {
+            background-color: #000000 !important;
+            border-bottom: 2px solid #ffc107; /* Línea delgada amarilla/dorada */
+        }
+
+        /* Texto Dorado/Amarillo para la Marca */
+        .brand-gold {
+            color: #ffc107 !important;
+            font-size: 24px;
+            letter-spacing: 1px;
+            transition: transform 0.3s ease;
+        }
+        .brand-gold:hover {
+            transform: scale(1.03);
+        }
+
+        /* Enlaces del Menú Centrados */
+        .nav-link-barberhub {
+            color: #ffffff !important;
+            font-weight: 500;
+            padding: 8px 16px !important;
+            border-radius: 6px;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        /* Al pasar el mouse o estar activo -> Se queda en Amarillo constante */
+        .nav-link-barberhub:hover, 
+        .nav-link-barberhub:focus, 
+        .nav-link-barberhub.active {
+            color: #ffc107 !important;
+            background-color: rgba(255, 193, 7, 0.15) !important; /* Fondo sutil amarillo */
+            border-bottom: 2px solid #ffc107 !important;
+            font-weight: bold;
+        }
+
+        /* Botón Dorado/Amarillo Relleno */
+        .btn-gold {
+            background-color: #ffc107 !important;
+            color: #000000 !important;
+            border: 2px solid #ffc107 !important;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .btn-gold:hover, 
+        .btn-gold:focus, 
+        .btn-gold:active {
+            background-color: #ffcd39 !important;
+            border-color: #ffcd39 !important;
+            color: #000000 !important;
+            box-shadow: 0 0 15px rgba(255, 193, 7, 0.6) !important;
+            transform: translateY(-2px);
+        }
+
+        /* Botón Transparente */
+        .btn-outline-gold {
+            background-color: transparent !important;
+            color: #ffc107 !important;
+            border: 2px solid #ffc107 !important;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .btn-outline-gold:hover, 
+        .btn-outline-gold:focus, 
+        .btn-outline-gold:active {
+            background-color: #ffc107 !important;
+            color: #000000 !important;
+            box-shadow: 0 0 15px rgba(255, 193, 7, 0.6) !important;
+            transform: translateY(-2px);
+        }
+
+        /* Estilos del Modal Oscuro BarberHUB */
+        .modal-barberhub {
+            background-color: #161b22;
+            border: 1px solid rgba(255, 193, 7, 0.2);
+            border-radius: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- BLOQUE DE ALERTAS Y MENSAJES DE DJANGO -->
+    {% if messages %}
+    <div class="position-fixed top-0 end-0 p-4" style="z-index: 1060; margin-top: 70px;">
+        {% for message in messages %}
+        <div class="alert alert-dismissible fade show shadow-lg border-0" role="alert" 
+             style="background-color: #161b22; color: #ffffff; border-left: 4px solid {% if message.tags == 'error' %}#dc3545{% else %}#ffc107{% endif %} !important; min-width: 300px;">
+            
+            <strong>
+                {% if message.tags == 'success' %}✅ ¡Éxito!
+                {% elif message.tags == 'error' %}❌ Error:
+                {% else %}ℹ️ Aviso:{% endif %}
+            </strong> 
+            
+            <span class="ms-1">{{ message }}</span>
+            
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Script para que se borre sola en 4 segundos -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            setTimeout(function() {
+                let alerts = document.querySelectorAll('.alert');
+                alerts.forEach(function(alertElement) {
+                    let bsAlert = new bootstrap.Alert(alertElement);
+                    bsAlert.close();
+                });
+            }, 4000); 
+        });
+    </script>
+    {% endif %}
+    <!-- FIN BLOQUE DE ALERTAS -->
+
+    <!-- Header / Navbar Principal -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-barberhub shadow-lg py-3 sticky-top">
+        <div class="container">
+            <!-- Marca / Logo -->
+            <a class="navbar-brand fw-bold brand-gold me-4" href="{% url 'home' %}">💈 BarberHUB</a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" style="border-color: #ffc107;">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <!-- Contenido Colapsable (Centrado) -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+                
+                <!-- Menú de Navegación Centrado Dinámico -->
+                <ul class="navbar-nav mx-auto text-center my-2 my-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-barberhub {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'home' %}">Inicio</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-barberhub {% if request.resolver_match.url_name == 'barberias' %}active{% endif %}" href="{% url 'barberias' %}">Barberías</a> 
+                    </li>
+
+                     <!-- BOTÓN DE HISTORIAL -->
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-barberhub {% if request.resolver_match.url_name == 'historial' %}active{% endif %}" href="{% url 'historial' %}">Historial</a> 
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-barberhub {% if request.resolver_match.url_name == 'soporte' %}active{% endif %}" href="{% url 'soporte' %}">Soporte y contacto</a>
+                    </li>
+
+                    <!-- BOTÓN CONDICIONAL SOLO PARA BARBEROS -->
+                    {% if user.is_authenticated %}
+                        {% if user.perfil.rol == 'BARBERO' %}
+                            <li class="nav-item">
+                                <a class="nav-link nav-link-barberhub {% if request.resolver_match.url_name == 'panel_barbero' %}active{% endif %}" href="{% url 'panel_barbero' %}">
+                                    💈 Mi Barbería
+                                </a>
+                            </li>
+                        {% endif %}
+
+                        <!-- BOTÓN CONDICIONAL SOLO PARA ADMINS / SUPERUSUARIOS -->
+                        {% if user.is_superuser or user.is_staff or user.username == 'juan_bonilla' or user.username == 'samuel_diez' or user.username == 'juan_pablo' %}
+                            <li class="nav-item">
+                                <a class="nav-link nav-link-barberhub {% if request.resolver_match.url_name == 'panel_admin_dashboard' %}active{% endif %}" href="{% url 'panel_admin_dashboard' %}" style="color: #ffc107 !important; font-weight: bold;">
+                                    Panel Admin
+                                </a>
+                            </li>
+                        {% endif %}
+                    {% endif %}
+                </ul>
+
+                <!-- Sección de Usuario / Autenticación -->
+                <div class="d-flex align-items-center justify-content-center mt-3 mt-lg-0">
+                    {% if user.is_authenticated %}
+                        <span class="navbar-text me-3 text-light">
+                            Bienvenido, <strong style="color: #ffc107;">{{ user.username }}</strong>
+                        </span>
+                        <!-- Botón que activa el Modal de Confirmación -->
+                        <button type="button" class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-bold" data-bs-toggle="modal" data-bs-target="#confirmLogoutModal">
+                            Cerrar Sesión
+                        </button>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-outline-gold btn-sm me-2 rounded-pill px-3">Iniciar Sesión</a>
+                        <a href="{% url 'registro' %}" class="btn btn-gold btn-sm rounded-pill px-3">Registrarse</a>
+                    {% endif %}
+                </div>
+
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenido dinámico de las vistas -->
+    <div class="container mt-4">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <!-- MODAL DE CONFIRMACIÓN DE CERRAR SESIÓN -->
+    {% if user.is_authenticated %}
+    <div class="modal fade" id="confirmLogoutModal" tabindex="-1" aria-labelledby="confirmLogoutModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content modal-barberhub text-white shadow-lg">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title fw-bold" id="confirmLogoutModalLabel" style="color: #ffc107;">
+                        🚪 Confirmar Salida
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center py-4">
+                    <p class="fs-5 mb-1 fw-bold">¿Estás seguro de que deseas cerrar sesión?</p>
+                    <small class="text-secondary">Tendrás que volver a ingresar para gestionar tu panel o reservas.</small>
+                </div>
+                <div class="modal-footer border-secondary justify-content-center">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
+                    <!-- Enlace directo limpio conectado a la ruta logout -->
+                    <a href="{% url 'logout' %}" class="btn btn-danger fw-bold rounded-pill px-4 text-decoration-none">
+                        Sí, Cerrar Sesión
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Bootstrap 5 JS Local -->
+    <script src="{% static 'gestion/js/bootstrap.bundle.min.js' %}"></script>
+</body>
+</html>

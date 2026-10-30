@@ -1,0 +1,713 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .full-width-wrapper {
+        width: 100vw;
+        position: relative;
+        left: 50%;
+        right: 50%;
+        margin-left: -50vw;
+        margin-right: -50vw;
+        overflow-x: hidden;
+        background-color: #0b0d10;
+        min-height: 90vh;
+    }
+
+    .glass-card {
+        background: rgba(22, 27, 34, 0.8) !important;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    }
+
+    .glass-card-hover {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: pointer;
+    }
+
+    .glass-card-hover:hover {
+        border-color: rgba(255, 193, 7, 0.6) !important;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(255, 193, 7, 0.15);
+    }
+
+    .form-control-dark,
+    .form-select-dark {
+        background-color: #161b22 !important;
+        border: 1px solid rgba(255, 255, 255, 0.15) !important;
+        color: #ffffff !important;
+        padding: 0.8rem 1rem;
+        border-radius: 10px;
+    }
+
+    .form-control-dark-readonly {
+        background-color: rgba(22, 27, 34, 0.6) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        color: #a3b1c2 !important;
+        padding: 0.8rem 1rem;
+        border-radius: 10px;
+        cursor: not-allowed;
+    }
+
+    .form-control-dark:focus,
+    .form-select-dark:focus {
+        border-color: #ffc107 !important;
+        box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.25) !important;
+    }
+
+    .step-number {
+        width: 32px;
+        height: 32px;
+        background-color: #ffc107;
+        color: #000;
+        font-weight: bold;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .service-check:checked + .service-label {
+        border-color: #ffc107 !important;
+        background-color: rgba(255, 193, 7, 0.1) !important;
+    }
+
+    .day-radio:checked + .day-label {
+        border-color: #ffc107 !important;
+        background-color: rgba(255, 193, 7, 0.15) !important;
+        color: #ffc107 !important;
+    }
+
+    .day-label {
+        background: rgba(22, 27, 34, 0.9);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        padding: 12px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+        color: #fff;
+        font-weight: 500;
+        display: block;
+    }
+
+    .day-label:hover {
+        border-color: rgba(255, 193, 7, 0.4);
+        background: rgba(255, 193, 7, 0.05);
+    }
+
+    .slot-radio:checked + .slot-label {
+        border-color: #ffc107 !important;
+        background-color: rgba(255, 193, 7, 0.15) !important;
+        color: #ffc107 !important;
+    }
+
+    .slot-label {
+        background: rgba(22, 27, 34, 0.9);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        padding: 12px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+        color: #fff;
+        font-weight: 500;
+        display: block;
+        height: 100%;
+    }
+
+    .slot-label:hover {
+        border-color: rgba(255, 193, 7, 0.4);
+        background: rgba(255, 193, 7, 0.05);
+    }
+</style>
+
+<div class="full-width-wrapper py-5 px-3 px-md-5">
+    <div class="container-fluid px-lg-5">
+
+        <!-- ENCABEZADO -->
+        <div class="text-center mb-5">
+            <span class="badge bg-warning text-dark fw-bold px-4 py-2 text-uppercase mb-3 rounded-pill shadow">
+                Reserva Online • Itagüí
+            </span>
+
+            <h1 class="display-4 fw-extrabold text-white">
+                Agenda tu <span class="text-warning">Cita</span>
+            </h1>
+
+            <p class="text-secondary fs-5 mx-auto" style="max-width: 650px;">
+                Selecciona la barbería de tu preferencia, escoge los servicios disponibles y agenda en el horario que mejor te convenga.
+            </p>
+        </div>
+
+        <form method="post" action="{% url 'agendar' %}">
+            {% csrf_token %}
+
+            <div class="row g-4">
+
+                <!-- COLUMNA IZQUIERDA -->
+                <div class="col-lg-8">
+
+                    <!-- PASO 1: BARBERÍA Y BARBERO -->
+                    <div class="card glass-card text-white rounded-4 p-4 mb-4 shadow">
+                        <div class="d-flex align-items-center gap-3 mb-4">
+                            <span class="step-number">1</span>
+                            <h3 class="h4 m-0 fw-bold">Barbería y Barbero</h3>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-secondary small fw-bold">
+                                    BARBERÍA SELECCIONADA
+                                </label>
+
+                                <input
+                                    type="text"
+                                    class="form-control form-control-dark-readonly"
+                                    value="{% if barberia_seleccionada %}{{ barberia_seleccionada.nombre }} - {{ barberia_seleccionada.barrio|default:'Itagüí' }}{% else %}Seleccione una barbería{% endif %}"
+                                    readonly
+                                >
+
+                                {% if barberia_seleccionada %}
+                                    <input
+                                        type="hidden"
+                                        name="barberia_id"
+                                        value="{{ barberia_seleccionada.id }}"
+                                    >
+                                {% endif %}
+
+                                <small class="text-warning opacity-75 mt-1 d-block">
+                                    🔒 Establecimiento fijado para esta reserva.
+                                </small>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label text-secondary small fw-bold">
+                                    BARBERO DE PREFERENCIA
+                                </label>
+
+                                <select class="form-select form-select-dark" name="barbero">
+                                    <option value="" selected>
+                                        Cualquier barbero disponible
+                                    </option>
+
+                                    {% if barberia_seleccionada and barberia_seleccionada.dueno %}
+                                        <option value="{{ barberia_seleccionada.dueno.username }}">
+                                            {{ barberia_seleccionada.dueno.username }} (Barbero Principal)
+                                        </option>
+                                    {% endif %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PASO 2: SERVICIOS -->
+                    <div class="card glass-card text-white rounded-4 p-4 mb-4 shadow">
+                        <div class="d-flex align-items-center gap-3 mb-4">
+                            <span class="step-number">2</span>
+                            <h3 class="h4 m-0 fw-bold">Elige tus Servicios</h3>
+                        </div>
+
+                        <div class="row g-3">
+                            {% if servicios %}
+                                {% for s in servicios %}
+                                    <div class="col-md-6">
+                                        <input
+                                            type="checkbox"
+                                            class="btn-check service-check"
+                                            id="service_{{ s.id }}"
+                                            name="servicios"
+                                            value="{{ s.id }}"
+                                            data-duracion="{{ s.duracion_minutos|default:30 }}"
+                                            autocomplete="off"
+                                        >
+
+                                        <label
+                                            class="card glass-card glass-card-hover service-label p-3 h-100 rounded-3 text-white border"
+                                            for="service_{{ s.id }}"
+                                        >
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <span class="fw-bold fs-5">
+                                                    {{ s.nombre }}
+                                                </span>
+
+                                                <span
+                                                    class="text-warning fw-bold fs-5 precio-cop"
+                                                    data-precio="{{ s.precio }}"
+                                                >
+                                                    $ {{ s.precio }} COP
+                                                </span>
+                                            </div>
+
+                                            <p class="text-secondary small m-0">
+                                                Duración:
+                                                <span class="duracion-min">
+                                                    {{ s.duracion_minutos|default:30 }}
+                                                </span>
+                                                min.
+                                            </p>
+                                        </label>
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="col-12 text-center py-4">
+                                    <p class="text-secondary mb-0">
+                                        Esta barbería aún no ha configurado sus servicios o cortes.
+                                    </p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- PASO 3: DÍAS Y BLOQUES DE HORAS -->
+                    <div class="card glass-card text-white rounded-4 p-4 shadow">
+                        <div class="d-flex align-items-center gap-3 mb-4">
+                            <span class="step-number">3</span>
+                            <h3 class="h4 m-0 fw-bold">
+                                Horarios Disponibles de la Barbería
+                            </h3>
+                        </div>
+
+                        {% if horarios %}
+                            <div class="mb-4">
+                                <label class="form-label text-secondary small fw-bold d-block mb-3">
+                                    1. SELECCIONA EL DÍA
+                                </label>
+
+                                <div id="contenedor-dias" class="row g-2">
+                                    {% for h in horarios %}
+                                        <div class="col-6 col-md-4">
+                                            <input
+                                                type="radio"
+                                                class="btn-check day-radio"
+                                                id="day_{{ h.dia }}"
+                                                name="dia_seleccionado"
+                                                value="{{ h.dia }}"
+                                                data-dia-nombre="{{ h.get_dia_display|lower }}"
+                                                data-apertura="{% if h.hora_apertura %}{{ h.hora_apertura|time:'H:i' }}{% else %}08:00{% endif %}"
+                                                data-cierre="{% if h.hora_cierre %}{{ h.hora_cierre|time:'H:i' }}{% else %}20:00{% endif %}"
+                                                autocomplete="off"
+                                                required
+                                            >
+
+                                            <label class="day-label" for="day_{{ h.dia }}">
+                                                <strong class="text-warning d-block">
+                                                    {{ h.get_dia_display }}
+                                                </strong>
+
+                                                <span class="small text-secondary">
+                                                    {{ h.hora_apertura|time:"g:i A" }} -
+                                                    {{ h.hora_cierre|time:"g:i A" }}
+                                                </span>
+                                            </label>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="form-label text-secondary small fw-bold d-block mb-3">
+                                    2. SELECCIONA EL BLOQUE DE HORA
+                                    <span id="info-duracion-total" class="text-warning"></span>
+                                </label>
+
+                                <div id="contenedor-slots" class="row g-2">
+                                    <div class="col-12 text-secondary py-3">
+                                        <em>
+                                            Selecciona un día arriba para mostrar los bloques de hora disponibles.
+                                        </em>
+                                    </div>
+                                </div>
+
+                                <!-- CAMPOS OCULTOS PARA FECHA Y HORA -->
+                                <input
+                                    type="hidden"
+                                    id="input-fecha-calculada"
+                                    name="fecha"
+                                >
+
+                                <input
+                                    type="hidden"
+                                    id="input-hora-seleccionada"
+                                    name="hora"
+                                    required
+                                >
+                            </div>
+                        {% else %}
+                            <div class="text-center py-4">
+                                <p class="text-warning mb-0">
+                                    Esta barbería aún no ha configurado sus horarios de atención.
+                                </p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- COLUMNA DERECHA: RESUMEN -->
+                <div class="col-lg-4">
+                    <div
+                        class="card glass-card text-white rounded-4 p-4 shadow sticky-top"
+                        style="top: 2rem;"
+                    >
+                        <h4 class="fw-bold mb-4 pb-3 border-bottom border-secondary">
+                            Resumen de Cita
+                        </h4>
+
+                        <div class="mb-4">
+                            <label class="form-label text-secondary small fw-bold">
+                                DATOS DE CONTACTO
+                            </label>
+
+                            <input
+                                type="text"
+                                class="form-control form-control-dark-readonly mb-2"
+                                placeholder="Nombre completo"
+                                name="nombre_cliente"
+                                value="{{ user.get_full_name|default:user.username }}"
+                                readonly
+                                required
+                            >
+
+                            <input
+                                type="tel"
+                                class="form-control form-control-dark-readonly"
+                                placeholder="Teléfono / WhatsApp"
+                                name="telefono"
+                                value="{% if request.user.perfilusuario.telefono %}{{ request.user.perfilusuario.telefono }}{% elif request.user.perfil.telefono %}{{ request.user.perfil.telefono }}{% else %}{{ user.telefono|default:'' }}{% endif %}"
+                                readonly
+                                required
+                            >
+
+                            <small class="text-secondary opacity-75 mt-2 d-block">
+                                🔒 Datos tomados automáticamente de tu cuenta registrada.
+                            </small>
+                        </div>
+
+                        <ul class="list-unstyled text-secondary small mb-4">
+                            <li class="d-flex justify-content-between mb-2">
+                                <span>Establecimiento</span>
+
+                                <span class="text-warning fw-bold">
+                                    {% if barberia_seleccionada %}
+                                        {{ barberia_seleccionada.nombre }}
+                                    {% else %}
+                                        No seleccionado
+                                    {% endif %}
+                                </span>
+                            </li>
+
+                            <li class="d-flex justify-content-between mb-2">
+                                <span>Ubicación</span>
+                                <span class="text-white">Itagüí, Antioquia</span>
+                            </li>
+
+                            <li class="d-flex justify-content-between mb-2">
+                                <span>Reserva</span>
+                                <span class="text-success fw-bold">SIN COSTO EXTRA</span>
+                            </li>
+                        </ul>
+
+                        <hr class="border-secondary opacity-50 my-4">
+
+                        <button
+                            type="submit"
+                            class="btn btn-warning btn-lg fw-bold w-100 py-3 rounded-pill text-dark shadow"
+                        >
+                            Confirmar y Agendar
+                        </button>
+
+                        <p class="text-center text-secondary small mt-3 m-0">
+                            🔒 Pago directamente en la barbería al finalizar tu atención.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </form>
+
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    // FORMATEAR PRECIOS EN PESOS COLOMBIANOS
+    const precios = document.querySelectorAll('.precio-cop');
+
+    precios.forEach(function (elemento) {
+        const valor = elemento.getAttribute('data-precio');
+
+        if (valor) {
+            const numero = parseInt(valor, 10);
+
+            if (!isNaN(numero)) {
+                elemento.textContent =
+                    '$ ' + numero.toLocaleString('es-CO') + ' COP';
+            }
+        }
+    });
+
+    // ELEMENTOS DEL FORMULARIO
+    const dayRadios = document.querySelectorAll('.day-radio');
+    const dayLabels = document.querySelectorAll('.day-label');
+    const serviceChecks = document.querySelectorAll('.service-check');
+
+    const contenedorSlots = document.getElementById('contenedor-slots');
+    const inputHoraSeleccionada = document.getElementById('input-hora-seleccionada');
+    const inputFechaCalculada = document.getElementById('input-fecha-calculada');
+    const infoDuracionTotal = document.getElementById('info-duracion-total');
+
+    // OBTENER FECHA DE HOY EN FORMATO YYYY-MM-DD POR DEFECTO
+    function obtenerFechaHoy() {
+        const hoy = new Date();
+        const anio = hoy.getFullYear();
+        const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+        const diaMes = String(hoy.getDate()).padStart(2, '0');
+        return `${anio}-${mes}-${diaMes}`;
+    }
+
+    // Inicializar la fecha de hoy por defecto de manera segura
+    if (inputFechaCalculada && !inputFechaCalculada.value) {
+        inputFechaCalculada.value = obtenerFechaHoy();
+    }
+
+    // CALCULAR LA DURACIÓN TOTAL DE LOS SERVICIOS SELECCIONADOS
+    function obtenerDuracionTotal() {
+        let totalMinutos = 0;
+
+        serviceChecks.forEach(function (checkbox) {
+            if (checkbox.checked) {
+                totalMinutos += parseInt(checkbox.dataset.duracion || 30, 10);
+            }
+        });
+
+        return totalMinutos > 0 ? totalMinutos : 30;
+    }
+
+    // CONVERTIR UNA HORA DE 24 HORAS A FORMATO AM/PM
+    function formatHora12(horaStr) {
+        const partes = horaStr.split(':');
+        const horas = parseInt(partes[0], 10);
+        const minutos = parseInt(partes[1], 10);
+
+        const periodo = horas >= 12 ? 'PM' : 'AM';
+        const horas12 = horas % 12 || 12;
+
+        return `${horas12}:${String(minutos).padStart(2, '0')} ${periodo}`;
+    }
+
+    // CALCULAR LA FECHA EXACTA BUSCANDO EL PRÓXIMO DÍA DE LA SEMANA COINCIDENTE
+    function calcularFechaPorDia(diaDeseado) {
+        const hoy = new Date();
+        const diaActual = hoy.getDay(); // 0 (Domingo) a 6 (Sábado)
+
+        const mapaDias = {
+            'domingo': 0, 'dom': 0, '0': 0,
+            'lunes': 1, 'lun': 1, '1': 1,
+            'martes': 2, 'mar': 2, '2': 2,
+            'miercoles': 3, 'mie': 3, '3': 3,
+            'jueves': 4, 'jue': 4, '4': 4,
+            'viernes': 5, 'vie': 5, '5': 5,
+            'sabado': 6, 'sab': 6, '6': 6
+        };
+
+        const limpieza = String(diaDeseado ?? '').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        let targetDay = mapaDias[limpieza] !== undefined ? mapaDias[limpieza] : parseInt(diaDeseado, 10);
+
+        if (isNaN(targetDay) || targetDay < 0 || targetDay > 6) {
+            return obtenerFechaHoy();
+        }
+
+        let distancia = targetDay - diaActual;
+        if (distancia <= 0) {
+            distancia += 7;
+        }
+
+        const fechaFinal = new Date(hoy);
+        fechaFinal.setDate(hoy.getDate() + distancia);
+
+        const anio = fechaFinal.getFullYear();
+        const mes = String(fechaFinal.getMonth() + 1).padStart(2, '0');
+        const diaMes = String(fechaFinal.getDate()).padStart(2, '0');
+
+        return `${anio}-${mes}-${diaMes}`;
+    }
+
+    // GENERAR BLOQUES ENTRE LAS 8:00 AM Y LAS 8:00 PM
+    function generarSlotsConDuracion(apertura, cierre, duracionMinutos) {
+        const HORA_MINIMA = 8 * 60;   // 08:00 AM
+        const HORA_MAXIMA = 20 * 60;  // 08:00 PM
+
+        const slots = [];
+
+        apertura = apertura || '08:00';
+        cierre = cierre || '20:00';
+
+        const partesApertura = apertura.split(':').map(Number);
+        const partesCierre = cierre.split(':').map(Number);
+
+        const aperturaBarberia = partesApertura[0] * 60 + partesApertura[1];
+        const cierreBarberia = partesCierre[0] * 60 + partesCierre[1];
+
+        let minutosActuales = Math.max(aperturaBarberia, HORA_MINIMA);
+        const minutosCierreMax = Math.min(cierreBarberia, HORA_MAXIMA);
+
+        if (minutosActuales >= minutosCierreMax || duracionMinutos <= 0) {
+            return slots;
+        }
+
+        while (minutosActuales + duracionMinutos <= minutosCierreMax) {
+            const hInicio = Math.floor(minutosActuales / 60);
+            const mInicio = minutosActuales % 60;
+
+            const minutosFin = minutosActuales + duracionMinutos;
+
+            const hFin = Math.floor(minutosFin / 60);
+            const mFin = minutosFin % 60;
+
+            const valorHora = `${String(hInicio).padStart(2, '0')}:${String(mInicio).padStart(2, '0')}`;
+            const textoInicio = `${String(hInicio).padStart(2, '0')}:${String(mInicio).padStart(2, '0')}`;
+            const textoFin = `${String(hFin).padStart(2, '0')}:${String(mFin).padStart(2, '0')}`;
+
+            const textoBloque = `${formatHora12(textoInicio)} - ${formatHora12(textoFin)}`;
+
+            slots.push({
+                valor: valorHora,
+                texto: textoBloque
+            });
+
+            minutosActuales += duracionMinutos;
+        }
+
+        return slots;
+    }
+
+    // ACTUALIZAR LOS HORARIOS CUANDO SE SELECCIONA UN DÍA O SERVICIO
+    function actualizarSlots() {
+        const dayRadioSelected = document.querySelector('.day-radio:checked');
+
+        if (!dayRadioSelected) {
+            return;
+        }
+
+        const apertura = dayRadioSelected.getAttribute('data-apertura');
+        const cierre = dayRadioSelected.getAttribute('data-cierre');
+        const diaValue = dayRadioSelected.value;
+        const duracion = obtenerDuracionTotal();
+
+        if (inputFechaCalculada) {
+            const nombreDia = dayRadioSelected.dataset.diaNombre || diaValue;
+            inputFechaCalculada.value = calcularFechaPorDia(nombreDia);
+        }
+
+        if (infoDuracionTotal) {
+            infoDuracionTotal.textContent = `(Duración estimada: ${duracion} min)`;
+        }
+
+        if (!contenedorSlots || !inputHoraSeleccionada) {
+            return;
+        }
+
+        contenedorSlots.innerHTML = '';
+        inputHoraSeleccionada.value = '';
+
+        const slots = generarSlotsConDuracion(apertura, cierre, duracion);
+
+        if (slots.length === 0) {
+            contenedorSlots.innerHTML = `
+                <div class="col-12 text-warning py-3">
+                    No hay bloques de tiempo suficientes para los servicios seleccionados dentro del horario de esta barbería.
+                </div>
+            `;
+            return;
+        }
+
+        slots.forEach(function (slot, index) {
+            const colDiv = document.createElement('div');
+            colDiv.className = 'col-6 col-md-4 col-lg-3';
+
+            colDiv.innerHTML = `
+                <input
+                    type="radio"
+                    class="btn-check slot-radio"
+                    id="slot_${index}"
+                    name="slot_temp"
+                    value="${slot.valor}"
+                    autocomplete="off"
+                    required
+                >
+                <label class="slot-label" for="slot_${index}">
+                    ${slot.texto}
+                </label>
+            `;
+
+            contenedorSlots.appendChild(colDiv);
+        });
+
+        const slotRadios = contenedorSlots.querySelectorAll('.slot-radio');
+
+        slotRadios.forEach(function (radio) {
+            radio.addEventListener('change', function () {
+                if (this.checked) {
+                    inputHoraSeleccionada.value = this.value;
+                }
+            });
+        });
+    }
+
+    // AUTO-SELECCIONAR EL PRIMER DÍA AL CARGAR LA PÁGINA
+    if (dayRadios.length > 0) {
+        dayRadios[0].checked = true;
+        actualizarSlots();
+    }
+
+    // EVENTOS
+    dayRadios.forEach(function (radio) {
+        radio.addEventListener('change', actualizarSlots);
+    });
+
+    dayLabels.forEach(function (label) {
+        label.addEventListener('click', function () {
+            const radioId = this.getAttribute('for');
+            const radioInput = document.getElementById(radioId);
+
+            if (radioInput) {
+                radioInput.checked = true;
+                actualizarSlots();
+            }
+        });
+    });
+
+    serviceChecks.forEach(function (checkbox) {
+        checkbox.addEventListener('change', function () {
+            actualizarSlots();
+        });
+    });
+
+    // VALIDAR ANTES DE ENVIAR
+    const formulario = document.querySelector('form');
+
+    if (formulario) {
+        formulario.addEventListener('submit', function (event) {
+            // Asegurar que la fecha tenga un valor predeterminado si por alguna razón está vacía
+            if (inputFechaCalculada && !inputFechaCalculada.value) {
+                inputFechaCalculada.value = obtenerFechaHoy();
+            }
+
+            const fecha = inputFechaCalculada ? inputFechaCalculada.value : '';
+            const hora = inputHoraSeleccionada ? inputHoraSeleccionada.value : '';
+
+            const fechaValida = /^\d{4}-\d{2}-\d{2}$/.test(fecha);
+
+            if (!fechaValida || !hora) {
+                event.preventDefault();
+                alert('Selecciona un día y un bloque de hora válidos antes de confirmar la reserva.');
+            }
+        });
+    }
+
+});
+</script>
+{% endblock %}

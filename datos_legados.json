@@ -1,0 +1,16 @@
+[
+  {
+    "email": "cliente1@gmail.com",
+    "nombre": "Juan Pérez",
+    "rol": "CLIENTE",
+    "telefono": "3001234567",
+    "is_active": true
+  },
+  {
+    "email": "barbero1@gmail.com",
+    "nombre": "Carlos Gómez",
+    "rol": "BARBERO",
+    "telefono": "3109876543",
+    "is_active": true
+  }
+]

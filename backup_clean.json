@@ -1,0 +1,22 @@
+[
+{
+  "model": "gestion.perfilusuario",
+  "pk": 1,
+  "fields": {
+    "user": 4,
+    "rol": "CLIENTE",
+    "telefono": "3001234567",
+    "is_active": true
+  }
+},
+{
+  "model": "gestion.perfilusuario",
+  "pk": 2,
+  "fields": {
+    "user": 5,
+    "rol": "BARBERO",
+    "telefono": "3109876543",
+    "is_active": true
+  }
+}
+]

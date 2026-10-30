@@ -1,0 +1,500 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    /* Estilos específicos del panel de administración */
+    .admin-container {
+        max-width: 1200px;
+        margin: 20px auto;
+        padding: 0 20px;
+    }
+
+    .admin-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: linear-gradient(135deg, #1f1b0e 0%, #141414 100%);
+        border: 1px solid rgba(212, 175, 55, 0.3);
+        border-radius: 15px;
+        padding: 25px 35px;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    }
+
+    .admin-header h1 {
+        color: #d4af37;
+        font-size: 1.8rem;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .btn-volver {
+        background: transparent;
+        color: #d4af37;
+        border: 1px solid #d4af37;
+        padding: 10px 20px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-volver:hover {
+        background: #d4af37;
+        color: #000;
+    }
+
+    .messages {
+        margin-bottom: 25px;
+    }
+
+    .alert {
+        padding: 12px 20px;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        font-size: 0.9rem;
+    }
+
+    .alert-success, .alert-info { background: rgba(46, 204, 113, 0.2); border: 1px solid #2ecc71; color: #2ecc71; }
+    .alert-error, .alert-warning { background: rgba(231, 76, 60, 0.2); border: 1px solid #e74c3c; color: #e74c3c; }
+
+    .section-title {
+        color: #d4af37;
+        font-size: 1.4rem;
+        margin: 30px 0 15px 0;
+        border-bottom: 1px solid #333;
+        padding-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        justify-content: space-between;
+    }
+
+    .table-responsive {
+        background: #141414;
+        border: 1px solid #262626;
+        border-radius: 12px;
+        overflow-x: auto;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        margin-bottom: 40px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+        font-size: 0.9rem;
+    }
+
+    th, td {
+        padding: 15px 20px;
+        border-bottom: 1px solid #222;
+        color: #fff;
+    }
+
+    th {
+        background: #1c1c1c;
+        color: #d4af37;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        letter-spacing: 0.5px;
+    }
+
+    tr:hover {
+        background: rgba(255, 255, 255, 0.02);
+    }
+
+    .badge {
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        display: inline-block;
+    }
+
+    .badge-active { background: rgba(46, 204, 113, 0.15); color: #2ecc71; }
+    .badge-inactive { background: rgba(231, 76, 60, 0.15); color: #e74c3c; }
+
+    .btn-action {
+        padding: 6px 14px;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        display: inline-block;
+    }
+
+    .btn-desactivar {
+        background: rgba(231, 76, 60, 0.2);
+        color: #e74c3c;
+        border: 1px solid #e74c3c;
+    }
+
+    .btn-desactivar:hover {
+        background: #e74c3c;
+        color: #fff;
+    }
+
+    .btn-activar {
+        background: rgba(46, 204, 113, 0.2);
+        color: #2ecc71;
+        border: 1px solid #2ecc71;
+    }
+
+    .btn-activar:hover {
+        background: #2ecc71;
+        color: #000;
+    }
+
+    .btn-barber {
+        background: rgba(212, 175, 55, 0.2);
+        color: #d4af37;
+        border: 1px solid #d4af37;
+        margin-right: 5px;
+    }
+
+    .btn-barber:hover {
+        background: #d4af37;
+        color: #000;
+    }
+
+    .btn-eliminar {
+        background: rgba(231, 76, 60, 0.2);
+        color: #e74c3c;
+        border: 1px solid #e74c3c;
+    }
+
+    .btn-eliminar:hover {
+        background: #e74c3c;
+        color: #fff;
+    }
+
+    /* Estilos para inputs de edición de planes en tabla */
+    .input-plan-table {
+        background: #1f1f1f;
+        border: 1px solid #444;
+        color: #fff;
+        padding: 6px 10px;
+        border-radius: 6px;
+        width: 100%;
+        font-size: 0.85rem;
+    }
+    .input-plan-table:focus {
+        border-color: #d4af37;
+        outline: none;
+    }
+    textarea.input-plan-table {
+        resize: vertical;
+        min-height: 50px;
+    }
+
+    /* Estilos de tarjetas de planes en Admin */
+    .glass-card {
+        background: rgba(22, 27, 34, 0.75) !important;
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    }
+    .card-img-custom {
+        height: 200px;
+        object-fit: cover;
+        border-bottom: 2px solid rgba(255, 193, 7, 0.3);
+    }
+
+    /* Estilos para el contenedor del formulario de crear plan */
+    .form-crear-plan-container {
+        background: #141414;
+        border: 1px solid rgba(212, 175, 55, 0.3);
+        border-radius: 12px;
+        padding: 25px;
+        margin-bottom: 30px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+    }
+</style>
+
+<div class="admin-container">
+
+    <!-- Mensajes de Django -->
+    {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags|default:'info' }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- TABLA DE USUARIOS -->
+    <h2 class="section-title"><span><i data-lucide="users"></i> Gestión de Usuarios</span></h2>
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>Usuario</th>
+                    <th>Correo</th>
+                    <th>Rol / Tipo</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in usuarios %}
+                <tr>
+                    <td><strong>{{ u.username }}</strong></td>
+                    <td>{{ u.email|default:"No registrado" }}</td>
+                    <td>
+                        {% if u.perfilusuario %}
+                            {{ u.perfilusuario.get_rol_display }}
+                        {% elif u.perfil %}
+                            {{ u.perfil.get_rol_display }}
+                        {% else %}
+                            Sin Perfil
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if u.is_active %}
+                            <span class="badge badge-active">Activo</span>
+                        {% else %}
+                            <span class="badge badge-inactive">Inactivo</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if u.username not in 'juan_bonilla,samuel_diez,juan_pablo' %}
+                            <a href="{% url 'toggle_rol_barbero' u.id %}" class="btn-action btn-barber">
+                                {% if u.perfilusuario.rol == 'BARBERO' or u.perfil.rol == 'BARBERO' %}
+                                    Quitar Barbero
+                                {% else %}
+                                    Hacer Barbero
+                                {% endif %}
+                            </a>
+
+                            <form action="{% url 'toggle_usuario' u.id %}" method="post" style="display:inline;">
+                                {% csrf_token %}
+                                {% if u.is_active %}
+                                    <button type="submit" class="btn-action btn-desactivar">Desactivar</button>
+                                {% else %}
+                                    <button type="submit" class="btn-action btn-activar">Activar</button>
+                                {% endif %}
+                            </form>
+                        {% else %}
+                            <span style="color: #d4af37; font-size: 0.8rem; font-weight: 600;">Admin Principal</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- TABLA DE BARBERÍAS -->
+    <h2 class="section-title"><span><i data-lucide="scissors"></i> Gestión de Barberías</span></h2>
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Barrio / Dirección</th>
+                    <th>Dueño</th>
+                    <th>Plan Actual</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for b in barberias %}
+                <tr>
+                    <td><strong>{{ b.nombre }}</strong></td>
+                    <td>{{ b.barrio }} - {{ b.direccion }}</td>
+                    <td>{{ b.dueno.username }}</td>
+                    <td>{{ b.get_plan_actual_display }}</td>
+                    <td>
+                        {% if b.is_active %}
+                            <span class="badge badge-active">Activa</span>
+                        {% else %}
+                            <span class="badge badge-inactive">Inactiva</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <form action="{% url 'toggle_barberia' b.id %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            {% if b.is_active %}
+                                <button type="submit" class="btn-action btn-desactivar">Desactivar</button>
+                            {% else %}
+                                <button type="submit" class="btn-action btn-activar">Activar</button>
+                            {% endif %}
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="text-align: center; color: #888; padding: 20px;">No hay barberías registradas aún.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- GESTIÓN Y VISTA PREVIA DE PLANES CON BOTONES DE EDITAR Y ELIMINAR PLAN -->
+    <h2 class="section-title">
+        <span><i data-lucide="package"></i> Gestión de Planes de Barberos</span>
+        <!-- BOTÓN AÑADIR PLAN -->
+        <button type="button" class="btn btn-warning fw-bold px-3 py-1 rounded-pill text-dark text-decoration-none fs-6 shadow-sm" onclick="toggleFormularioPlan()">
+             Añadir Plan
+        </button>
+    </h2>
+
+    <!-- FORMULARIO OCULTO PARA CREAR NUEVO PLAN -->
+    <div id="seccionCrearPlan" class="form-crear-plan-container" style="display: none;">
+        <h3 class="text-warning mb-3 fs-5">Crear Nuevo Plan de Suscripción</h3>
+        <form action="{% url 'crear_plan' %}" method="post">
+            {% csrf_token %}
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label text-light small fw-bold">Nombre del Plan</label>
+                    <input type="text" name="nombre" class="input-plan-table" placeholder="Ej. Plan Premium" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label text-light small fw-bold">Límite / Tipo de Barberos</label>
+                    <input type="text" name="limite_barberos" class="input-plan-table" placeholder="Ej. Hasta 5 barberos" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label text-light small fw-bold">Precio ($ COP)</label>
+                    <input type="number" name="precio" class="input-plan-table" step="0.01" min="0" placeholder="Ej. 75000" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label text-light small fw-bold">URL de la Imagen (Opcional)</label>
+                    <input type="url" name="imagen" class="input-plan-table" placeholder="https://ejemplo.com/imagen.jpg">
+                </div>
+                <div class="col-12">
+                    <label class="form-label text-light small fw-bold">Descripción</label>
+                    <textarea name="descripcion" class="input-plan-table" placeholder="Detalles de lo que incluye el plan..." required></textarea>
+                </div>
+                <div class="col-12 d-flex justify-content-end gap-2 mt-3">
+                    <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-4" onclick="toggleFormularioPlan()">Cancelar</button>
+                    <button type="submit" class="btn btn-warning btn-sm fw-bold rounded-pill px-4 text-dark">Guardar Nuevo Plan</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <section class="container-fluid px-0 mb-5">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 border-bottom border-secondary pb-3">
+            <div>
+                <h3 class="h4 text-white m-0">Vista de Planes Activos</h3>
+                <p class="text-light m-0 small mt-1">Gestiona o elimina tus planes directamente desde las tarjetas o mediante la tabla de control.</p>
+            </div>
+            <span class="badge bg-dark border border-warning text-warning px-3 py-2 rounded-pill shadow-sm">
+                💼 Suscripciones Mensuales
+            </span>
+        </div>
+        
+        <div class="row g-4 text-center">
+            {% for plan in planes %}
+            <div class="col-md-4">
+                <div class="card glass-card text-white h-100 shadow-lg overflow-hidden rounded-4">
+                    <img src="{% if plan.imagen %}{{ plan.imagen }}{% else %}https://www.carloscondepeluqueros.com/wp-content/uploads/2019/01/cabecera-barbero-profesional.jpg{% endif %}" class="card-img-top card-img-custom" alt="Imagen del plan">
+                    <div class="card-body d-flex flex-column p-4">
+                        <h3 class="h4 card-title fw-bold text-white mb-2">{{ plan.nombre }}</h3>
+                        <h4 class="fs-3 text-warning fw-bold mb-3">${{ plan.precio }} COP <span class="fs-6 text-light fw-normal">/ mes</span></h4>
+                        <p class="text-light small fw-bold mb-3 p-2 bg-dark rounded border border-secondary">
+                            <i class="bi bi-person-fill text-warning"></i> {{ plan.limite_barberos }}
+                        </p>
+                        <p class="card-text text-light flex-grow-1 fs-6 text-start">
+                            {{ plan.descripcion }}
+                        </p>
+                        
+                        <!-- BOTONES MODIFICADOS: EDITAR PLAN Y ELIMINAR PLAN -->
+                        <div class="d-flex gap-2 mt-3">
+                            <a href="#tabla_edicion_plan_{{ plan.id }}" class="btn btn-warning fw-bold py-2 w-50 rounded-pill text-dark text-decoration-none fs-6">
+                                 Editar plan
+                            </a>
+                            <form action="{% url 'eliminar_plan' plan.id %}" method="post" class="w-50 m-0" onsubmit="return confirm('¿Estás seguro de eliminar este plan?');">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-danger fw-bold py-2 w-100 rounded-pill fs-6">
+                                    🗑️ Eliminar plan
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-4">
+                <p class="text-secondary mb-0">No hay planes configurados en el sistema.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- TABLA DE EDICIÓN RÁPIDA -->
+    <div class="table-responsive" id="tabla_edicion_planes">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre del Plan</th>
+                    <th>Límite / Tipo de Barberos</th>
+                    <th>Precio ($ COP)</th>
+                    <th>Descripción</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for plan in planes %}
+                <tr id="tabla_edicion_plan_{{ plan.id }}">
+                    <td>
+                        <form action="{% url 'editar_plan' plan.id %}" method="post" id="form_plan_{{ plan.id }}">
+                            {% csrf_token %}
+                            <input type="text" name="nombre" value="{{ plan.nombre }}" class="input-plan-table" required>
+                    </td>
+                    <td>
+                            <input type="text" name="limite_barberos" value="{{ plan.limite_barberos }}" class="input-plan-table" required>
+                    </td>
+                    <td>
+                            <input type="number" name="precio" value="{{ plan.precio }}" class="input-plan-table" step="0.01" min="0" required>
+                    </td>
+                    <td>
+                            <textarea name="descripcion" class="input-plan-table" required>{{ plan.descripcion }}</textarea>
+                        </form>
+                    </td>
+                    <td>
+                        <div class="d-flex gap-2">
+                            <button type="submit" form="form_plan_{{ plan.id }}" class="btn-action btn-barber">Actualizar</button>
+                            
+                            <form action="{% url 'eliminar_plan' plan.id %}" method="post" style="display:inline;" onsubmit="return confirm('¿Estás seguro de eliminar este plan?');">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-action btn-eliminar">Eliminar</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" style="text-align: center; color: #888; padding: 20px;">No hay planes configurados en el sistema.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<script>
+    lucide.createIcons();
+
+    // Función para mostrar/ocultar dinámicamente el formulario de nuevo plan
+    function toggleFormularioPlan() {
+        const seccion = document.getElementById('seccionCrearPlan');
+        if (seccion.style.display === 'none' || seccion.style.display === '') {
+            seccion.style.display = 'block';
+            seccion.scrollIntoView({ behavior: 'smooth' });
+        } else {
+            seccion.style.display = 'none';
+        }
+    }
+</script>
+{% endblock %}
